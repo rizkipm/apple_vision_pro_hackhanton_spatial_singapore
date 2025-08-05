@@ -12,18 +12,23 @@ import RealityKitContent
 struct ContentView: View {
     
     var body: some View {
+        
+        VStack{
+            Model3D(named: "DslrCamera", bundle: realityKitContentBundle)
+                
+        }
         HStack{
             Image("rizki")
                 .resizable()
-                .frame(width: 350, height: 500)
+                .frame(width: 200, height: 300)
                 .padding()
                 .background(.gray.opacity(90))
                 .opacity(90)
                 .cornerRadius(10)
-            
+                
             Image("building")
                 .resizable()
-                .frame(width: 350, height: 500)
+                .frame(width: 200, height: 300)
                 .padding()
                 .background(.gray.opacity(90))
                 .opacity(90)

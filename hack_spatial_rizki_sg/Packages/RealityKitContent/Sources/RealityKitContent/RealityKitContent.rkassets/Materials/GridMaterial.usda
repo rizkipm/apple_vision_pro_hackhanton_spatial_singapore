@@ -212,5 +212,24 @@ def Xform "Root"
             int ui:nodegraph:node:stackingOrder = 1363
         }
     }
+
+    def "Robot" (
+        active = true
+        prepend references = @../Robot.usdz@
+    )
+    {
+        float3 xformOp:scale = (1, 1, 1)
+        float3 xformOp:translate = (-0.044002466, -1.1920929e-7, 0.70034575)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+    }
+
+    def "DslrCamera" (
+        active = true
+        prepend references = @../DslrCamera.usdz@
+    )
+    {
+        float3 xformOp:scale = (1, 1, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+    }
 }
 
