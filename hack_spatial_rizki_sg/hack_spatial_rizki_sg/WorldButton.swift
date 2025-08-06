@@ -11,35 +11,84 @@ import UIKit
 
 struct WorldButton {
     let world: WorldType
+    let onTap: () -> Void
     let entity: ModelEntity
 
-    init(world: WorldType) {
+    init(world: WorldType, onTap: @escaping () -> Void) {
         self.world = world
+        self.onTap = onTap
 
-        // Main button (sphere)
-        let sphere = MeshResource.generateSphere(radius: 0.1)
+        // Create main button sphere
+        let sphereMesh = MeshResource.generateSphere(radius: 0.1)
         let material = SimpleMaterial(color: world.color, isMetallic: false)
-        self.entity = ModelEntity(mesh: sphere, materials: [material])
+        self.entity = ModelEntity(mesh: sphereMesh, materials: [material])
         entity.name = world.rawValue
 
-        // Text label
+        // Create text label with better positioning
         let textMesh = MeshResource.generateText(
             "\(world.icon)\n\(world.rawValue)",
             extrusionDepth: 0.01,
-            font: .systemFont(ofSize: 0.03),
+            font: .systemFont(ofSize: 0.03), // Smaller font
             containerFrame: .zero,
             alignment: .center,
             lineBreakMode: .byWordWrapping
         )
-        let textEntity = ModelEntity(mesh: textMesh)
-        textEntity.position = SIMD3(0, 0.15, 0)
+        
+        let textMaterial = SimpleMaterial(color: .white, isMetallic: false)
+        let textEntity = ModelEntity(mesh: textMesh, materials: [textMaterial])
+        textEntity.position = SIMD3(0, 0.18, 0) // Higher position
         entity.addChild(textEntity)
 
-        // Collision and gesture readiness
+        // CRITICAL: Enable proper collision detection
         entity.generateCollisionShapes(recursive: true)
-        entity.components.set(InputTargetComponent())
+        entity.components.set(InputTargetComponent(allowedInputTypes: .indirect))
+        
+        // Add subtle glow effect
+        addGlowEffect()
+    }
+    
+    private func addGlowEffect() {
+        // Create glow ring
+        let ringMesh = MeshResource.generateSphere(radius: 0.12)
+        var glowMaterial = SimpleMaterial(color: world.color, isMetallic: false)
+        glowMaterial.baseColor = MaterialColorParameter.color(world.color.withAlphaComponent(0.3))
+        
+        let glowEntity = ModelEntity(mesh: ringMesh, materials: [glowMaterial])
+        entity.addChild(glowEntity)
     }
 }
+
+//struct WorldButton {
+//    let world: WorldType
+//    let entity: ModelEntity
+//
+//    init(world: WorldType) {
+//        self.world = world
+//
+//        // Main button (sphere)
+//        let sphere = MeshResource.generateSphere(radius: 0.1)
+//        let material = SimpleMaterial(color: world.color, isMetallic: false)
+//        self.entity = ModelEntity(mesh: sphere, materials: [material])
+//        entity.name = world.rawValue
+//
+//        // Text label
+//        let textMesh = MeshResource.generateText(
+//            "\(world.icon)\n\(world.rawValue)",
+//            extrusionDepth: 0.01,
+//            font: .systemFont(ofSize: 0.03),
+//            containerFrame: .zero,
+//            alignment: .center,
+//            lineBreakMode: .byWordWrapping
+//        )
+//        let textEntity = ModelEntity(mesh: textMesh)
+//        textEntity.position = SIMD3(0, 0.15, 0)
+//        entity.addChild(textEntity)
+//
+//        // Collision and gesture readiness
+//        entity.generateCollisionShapes(recursive: true)
+//        entity.components.set(InputTargetComponent())
+//    }
+//}
 
 
 //import Foundation

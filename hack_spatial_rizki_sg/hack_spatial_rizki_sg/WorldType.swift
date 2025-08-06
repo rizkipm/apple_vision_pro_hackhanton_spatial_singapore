@@ -9,30 +9,58 @@ import RealityKit
 import UIKit
 
 
+//enum WorldType: String, CaseIterable {
+//    case candyPlanet = "Candy Planet"
+//    case zenGarden = "Zen Garden"
+//    case spaceCatcher = "Space Catcher"
+//    case memoryBubbles = "Memory Bubbles"
+//    case artisticMode = "Artistic Mode"
+//
+//    var color: UIColor {
+//        switch self {
+//        case .candyPlanet: return .systemPink
+//        case .zenGarden: return .systemGreen
+//        case .spaceCatcher: return .systemBlue
+//        case .memoryBubbles: return .systemTeal
+//        case .artisticMode: return .systemOrange
+//        }
+//    }
+//
+//    var icon: String {
+//        switch self {
+//        case .candyPlanet: return "🍬"
+//        case .zenGarden: return "🌸"
+//        case .spaceCatcher: return "🚀"
+//        case .memoryBubbles: return "💭"
+//        case .artisticMode: return "🎨"
+//        }
+//    }
+//}
+
 enum WorldType: String, CaseIterable {
     case candyPlanet = "Candy Planet"
     case zenGarden = "Zen Garden"
     case spaceCatcher = "Space Catcher"
     case memoryBubbles = "Memory Bubbles"
     case artisticMode = "Artistic Mode"
-
+    
+    var icon: String {
+        switch self {
+        case .candyPlanet: return "🍭"
+        case .zenGarden: return "🧘‍♀️"
+        case .spaceCatcher: return "🚀"
+        case .memoryBubbles: return "💭"
+        case .artisticMode: return "🎨"
+        }
+    }
+    
     var color: UIColor {
         switch self {
         case .candyPlanet: return .systemPink
         case .zenGarden: return .systemGreen
         case .spaceCatcher: return .systemBlue
-        case .memoryBubbles: return .systemTeal
+        case .memoryBubbles: return .systemPurple
         case .artisticMode: return .systemOrange
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .candyPlanet: return "🍬"
-        case .zenGarden: return "🌸"
-        case .spaceCatcher: return "🚀"
-        case .memoryBubbles: return "💭"
-        case .artisticMode: return "🎨"
         }
     }
 }
