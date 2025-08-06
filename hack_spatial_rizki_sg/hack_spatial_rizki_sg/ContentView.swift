@@ -15,6 +15,7 @@ struct ContentView: View {
         
         VStack{
             Model3D(named: "DslrCamera", bundle: realityKitContentBundle)
+                .padding(.bottom)
                 
         }
         HStack{
