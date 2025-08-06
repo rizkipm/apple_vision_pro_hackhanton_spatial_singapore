@@ -10,8 +10,14 @@ import SwiftUI
 @main
 struct hack_spatial_rizki_sgApp: App {
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+            WindowGroup {
+                ContentView()
+                   .background(.black.opacity(0.8))
+            }
+
+
+            ImmersiveSpace(id: "Immersive") {
+                ImmersiveView()
+            }
         }
-    }
 }
