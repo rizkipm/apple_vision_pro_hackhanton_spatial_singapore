@@ -10,8 +10,15 @@ import SwiftUI
 @main
 struct hack_spatial_rizki_sgApp: App {
     var body: some Scene {
+//        WindowGroup {
+//            ContentView()
+//        }
+        
         WindowGroup {
-            ContentView()
-        }
-    }
+                    MainContent()
+                }
+//                .windowStyle(.volumetric)
+//                .defaultSize(width: 1200, height: 800, depth: 400)
+            }
+    
 }
