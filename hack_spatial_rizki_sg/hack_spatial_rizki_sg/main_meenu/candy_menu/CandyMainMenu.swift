@@ -1237,6 +1237,10 @@ struct GameContentOverlay: View {
                 progress = 1.0
             }
         }
+        // 3) Present full-screen PlayAroundGardenView
+//        .fullScreenCover(isPresented: $showPlayAround) {
+//            PlayCandyContentView()
+//        }
     }
 }
 

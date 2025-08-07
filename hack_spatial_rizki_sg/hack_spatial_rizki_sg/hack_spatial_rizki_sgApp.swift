@@ -14,12 +14,16 @@ struct hack_spatial_rizki_sgApp: App {
         
         
         WindowGroup {
-            MainContent()
+            PlayCandyContentView()
+//            MainContent()
                 .environment(appModel)
         }
         ImmersiveSpace(id: appModel.immersiveSpaceID) {
             ImmersiveView()
                 .environment(appModel)
+        }
+        ImmersiveSpace(id: "CandyWorld") {
+            CandyWorldView()
         }
         .immersionStyle(selection: .constant(.mixed), in: .mixed)
     }
