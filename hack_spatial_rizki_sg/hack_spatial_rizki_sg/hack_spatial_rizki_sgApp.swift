@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 @main
 struct hack_spatial_rizki_sgApp: App {
     @State private var appModel = AppModel()
@@ -14,10 +15,14 @@ struct hack_spatial_rizki_sgApp: App {
         
         
         WindowGroup {
-            PlayCandyContentView()
+//            PlayCandyContentView()
 //            MainContent()
-                .environment(appModel)
+            PlayPlanetMainView()
+//                .environment(appModel)
+                
         }
+        .windowStyle(.volumetric)
+        .defaultSize(width: 2, height: 2, depth: 2, in: .meters)
         ImmersiveSpace(id: appModel.immersiveSpaceID) {
             ImmersiveView()
                 .environment(appModel)
