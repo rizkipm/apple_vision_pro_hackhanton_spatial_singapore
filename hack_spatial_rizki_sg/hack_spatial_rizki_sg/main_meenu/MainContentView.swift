@@ -56,6 +56,7 @@ struct MainContentView: View {
     @State private var showCandyPlanet = false
     @State private var showZenGarden = false
     @State private var showSpaceCatcher = false
+    @State private var showMemoriesBuble = false
     
     var body: some View {
         ZStack {
@@ -66,7 +67,7 @@ struct MainContentView: View {
                         insertion: .move(edge: .trailing).combined(with: .opacity),
                         removal: .move(edge: .leading).combined(with: .opacity)
                     ))
-                    .zIndex(3)
+                    .zIndex(4)
             } else if showZenGarden {
                 // Full screen Zen Garden page - replaces everything
                 ZenGardenView(showZenGarden: $showZenGarden)
@@ -74,7 +75,7 @@ struct MainContentView: View {
                         insertion: .move(edge: .bottom).combined(with: .opacity),
                         removal: .move(edge: .top).combined(with: .opacity)
                     ))
-                    .zIndex(3)
+                    .zIndex(4)
             }else if showSpaceCatcher {
                 // Full screen Space Catcher page - replaces everything
                 SpaceCatcherView(showSpaceCatcher: $showSpaceCatcher)
@@ -82,7 +83,15 @@ struct MainContentView: View {
                         insertion: .move(edge: .top).combined(with: .opacity),
                         removal: .move(edge: .bottom).combined(with: .opacity)
                     ))
-                    .zIndex(3)
+                    .zIndex(4)
+            }else if showMemoriesBuble {
+                // Full screen Space Catcher page - replaces everything
+                MemoryBubblesView(showMemoriesBuble: $showMemoriesBuble)
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .top).combined(with: .opacity),
+                        removal: .move(edge: .bottom).combined(with: .opacity)
+                    ))
+                    .zIndex(4)
             } else {
                 // Normal content with header and tabs
                 VStack(spacing: 0) {
@@ -93,7 +102,7 @@ struct MainContentView: View {
                     ScrollView(.vertical, showsIndicators: false) {
                         switch selectedTab {
                         case "Home":
-                            HomeContentView(showCandyPlanet: $showCandyPlanet, showZenGarden: $showZenGarden, showSpaceCatcher: $showSpaceCatcher)
+                            HomeContentView(showCandyPlanet: $showCandyPlanet, showZenGarden: $showZenGarden, showSpaceCatcher: $showSpaceCatcher, showMemoriesBubble: $showMemoriesBuble)
                         case "Games":
                             GamesContentView(
                                 showFullPageGame: $showFullPageGame,
@@ -106,7 +115,7 @@ struct MainContentView: View {
                         case "MadeForYou":
                             MadeForYouContentView()
                         default:
-                            HomeContentView(showCandyPlanet: $showCandyPlanet, showZenGarden: $showZenGarden, showSpaceCatcher: $showSpaceCatcher)
+                            HomeContentView(showCandyPlanet: $showCandyPlanet, showZenGarden: $showZenGarden, showSpaceCatcher: $showSpaceCatcher, showMemoriesBubble: $showMemoriesBuble)
                         }
                     }
                     .scrollContentBackground(.hidden)
@@ -123,6 +132,8 @@ struct MainContentView: View {
         .animation(.easeInOut(duration: 0.6), value: showCandyPlanet)
         .animation(.easeInOut(duration: 0.6), value: showZenGarden)
         .animation(.easeInOut(duration: 0.6), value: showSpaceCatcher)
+        .animation(.easeInOut(duration: 0.6), value: showMemoriesBuble)
+
     }
 }
 
@@ -224,6 +235,7 @@ struct HomeContentView: View {
     @Binding var showCandyPlanet: Bool
     @Binding var showZenGarden: Bool
     @Binding var showSpaceCatcher: Bool
+    @Binding var showMemoriesBubble: Bool
     
     let games = [
             GameItem(title: "Candy Planet", color: .pink, imageName: "candies"),
@@ -307,7 +319,9 @@ struct HomeContentView: View {
             }
             print("Navigate to Space Catcher")
         case "Memory Bubbles":
-            // TODO: Navigate to Memory Bubbles
+            withAnimation(.easeInOut(duration: 0.6)) {
+                showMemoriesBubble = true
+            }
             print("Navigate to Memory Bubbles")
         case "Artist Mode":
             // TODO: Navigate to Artist Mode
@@ -383,6 +397,10 @@ struct GameCardView: View {
                         Image(systemName: "globe")
                             .font(.caption)
                             .foregroundColor(.blue)
+                    }else if game.title == "Memory Bubbles" {
+                        Image(systemName: "brain.head.profile")
+                            .font(.caption)
+                            .foregroundColor(.blue)
                     }
                 }
             }
@@ -414,6 +432,16 @@ struct GameCardView: View {
                                     lineWidth: 2
                                 )
                         }else if game.title == "Space Catcher" {
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [.blue, .purple]),
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 2
+                                )
+                        }else if game.title == "Memory Bubbles" {
                             RoundedRectangle(cornerRadius: 20)
                                 .stroke(
                                     LinearGradient(
