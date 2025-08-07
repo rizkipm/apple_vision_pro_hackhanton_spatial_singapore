@@ -58,6 +58,7 @@ struct MainContentView: View {
     @State private var showSpaceCatcher = false
     @State private var showMemoriesBuble = false
     @State private var showArtistMode = false
+    @State private var showAbout = false
     
     
     var body: some View {
@@ -69,7 +70,7 @@ struct MainContentView: View {
                         insertion: .move(edge: .trailing).combined(with: .opacity),
                         removal: .move(edge: .leading).combined(with: .opacity)
                     ))
-                    .zIndex(5)
+                    .zIndex(6)
             } else if showZenGarden {
                 // Full screen Zen Garden page - replaces everything
                 ZenGardenView(showZenGarden: $showZenGarden)
@@ -77,7 +78,7 @@ struct MainContentView: View {
                         insertion: .move(edge: .bottom).combined(with: .opacity),
                         removal: .move(edge: .top).combined(with: .opacity)
                     ))
-                    .zIndex(5)
+                    .zIndex(6)
             }else if showSpaceCatcher {
                 // Full screen Space Catcher page - replaces everything
                 SpaceCatcherView(showSpaceCatcher: $showSpaceCatcher)
@@ -85,7 +86,7 @@ struct MainContentView: View {
                         insertion: .move(edge: .top).combined(with: .opacity),
                         removal: .move(edge: .bottom).combined(with: .opacity)
                     ))
-                    .zIndex(5)
+                    .zIndex(6)
             }else if showMemoriesBuble {
                 // Full screen Space Catcher page - replaces everything
                 MemoryBubblesView(showMemoriesBuble: $showMemoriesBuble)
@@ -93,7 +94,7 @@ struct MainContentView: View {
                         insertion: .move(edge: .top).combined(with: .opacity),
                         removal: .move(edge: .bottom).combined(with: .opacity)
                     ))
-                    .zIndex(5)
+                    .zIndex(6)
             }else if showArtistMode {
                 // Full screen Space Catcher page - replaces everything
                 ArtisticModeView(showArtistMode: $showArtistMode)
@@ -101,7 +102,15 @@ struct MainContentView: View {
                         insertion: .move(edge: .top).combined(with: .opacity),
                         removal: .move(edge: .bottom).combined(with: .opacity)
                     ))
-                    .zIndex(5)
+                    .zIndex(6)
+            }else if showAbout {
+                // Full screen Space Catcher page - replaces everything
+                AboutUsView(showAbout: $showAbout)
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .top).combined(with: .opacity),
+                        removal: .move(edge: .bottom).combined(with: .opacity)
+                    ))
+                    .zIndex(6)
             } else {
                 // Normal content with header and tabs
                 VStack(spacing: 0) {
@@ -113,7 +122,7 @@ struct MainContentView: View {
                         switch selectedTab {
                         case "Home":
                             HomeContentView(showCandyPlanet: $showCandyPlanet, showZenGarden: $showZenGarden, showSpaceCatcher: $showSpaceCatcher, showMemoriesBubble: $showMemoriesBuble,
-                                            showArtistMode: $showArtistMode)
+                                            showArtistMode: $showArtistMode, showAbout: $showAbout)
                         case "Games":
                             GamesContentView(
                                 showFullPageGame: $showFullPageGame,
@@ -127,7 +136,7 @@ struct MainContentView: View {
                             MadeForYouContentView()
                         default:
                             HomeContentView(showCandyPlanet: $showCandyPlanet, showZenGarden: $showZenGarden, showSpaceCatcher: $showSpaceCatcher, showMemoriesBubble: $showMemoriesBuble,
-                                            showArtistMode: $showArtistMode
+                                            showArtistMode: $showArtistMode, showAbout: $showAbout
                             )
                         }
                     }
@@ -147,6 +156,7 @@ struct MainContentView: View {
         .animation(.easeInOut(duration: 0.6), value: showSpaceCatcher)
         .animation(.easeInOut(duration: 0.6), value: showMemoriesBuble)
         .animation(.easeInOut(duration: 0.6), value: showArtistMode)
+        .animation(.easeInOut(duration: 0.6), value: showAbout)
 
     }
 }
@@ -251,6 +261,7 @@ struct HomeContentView: View {
     @Binding var showSpaceCatcher: Bool
     @Binding var showMemoriesBubble: Bool
     @Binding var showArtistMode: Bool
+    @Binding var showAbout: Bool
     
     let games = [
             GameItem(title: "Candy Planet", color: .pink, imageName: "candies"),
@@ -344,7 +355,9 @@ struct HomeContentView: View {
             }
             print("Navigate to Artist Mode")
         case "About Neuroscope":
-            // TODO: Navigate to About Neuroscope
+            withAnimation(.easeInOut(duration: 0.6)) {
+                showAbout = true
+            }
             print("Navigate to About Neuroscope")
         default:
             print("Unknown game: \(game.title)")
@@ -422,6 +435,10 @@ struct GameCardView: View {
                         Image(systemName: "paintbrush.fill")
                             .font(.caption)
                             .foregroundColor(.blue)
+                    }else if game.title == "About Neuroscope" {
+                        Image(systemName: "info.circle.fill")
+                            .font(.caption)
+                            .foregroundColor(.blue)
                     }
                 }
             }
@@ -473,6 +490,16 @@ struct GameCardView: View {
                                     lineWidth: 2
                                 )
                         }else if game.title == "Artist Mode" {
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [.blue, .purple]),
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 2
+                                )
+                        }else if game.title == "About Neuroscope" {
                             RoundedRectangle(cornerRadius: 20)
                                 .stroke(
                                     LinearGradient(
