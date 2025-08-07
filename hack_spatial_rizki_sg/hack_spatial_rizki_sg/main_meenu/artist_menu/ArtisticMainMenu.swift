@@ -595,7 +595,7 @@ struct ArtisticModeView: View {
     }
     
     func checkTherapyProgress() {
-        if let task = currentTherapyTask {
+//        if let task = currentTherapyTask {
             // Simple validation
             if drawingPaths.count > 0 {
                 therapyScore += 15
@@ -669,7 +669,6 @@ struct ArtisticModeView: View {
         context.fill(path, with: .color(shape.color.opacity(0.5)))
         context.stroke(path, with: .color(shape.color), lineWidth: 2)
     }
-}
 
 // MARK: - Supporting Views
 

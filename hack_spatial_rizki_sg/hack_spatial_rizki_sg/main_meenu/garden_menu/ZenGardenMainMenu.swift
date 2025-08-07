@@ -1,10 +1,12 @@
 import SwiftUI
 
+
 // MARK: - Zen Garden View
 struct ZenGardenView: View {
     @Binding var showZenGarden: Bool
     @State private var animateButton = false
     @State private var showGameContent = false
+    @State private var showPlay = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -68,7 +70,9 @@ struct ZenGardenView: View {
                                     // Start Exploring button
                                     Button {
                                         withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                                            showGameContent = true
+                                            showPlay = true
+//                                            showGameContent = true
+                                            
                                         }
                                     } label: {
                                         HStack(spacing: 8) {
@@ -182,7 +186,8 @@ struct ZenGardenView: View {
                                     // Primary action button
                                     Button {
                                         withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                                            showGameContent = true
+//                                            showGameContent = true
+                                            showPlay = true
                                         }
                                     } label: {
                                         HStack {
@@ -259,6 +264,11 @@ struct ZenGardenView: View {
         }
         .onAppear {
             animateButton = true
+        }
+        
+        // <-- fullScreenCover di parent:
+        .fullScreenCover(isPresented: $showPlay) {
+                    PlayAroundZenGarden()   // view dari playaroundgarden.swift
         }
     }
 }
@@ -805,17 +815,101 @@ struct ZenGameFeaturesView: View {
         }
     }
 }
+//
+//// MARK: - Zen Game Content Overlay
+//struct ZenGameContentOverlay: View {
+//    @Binding var showGameContent: Bool
+//    @State private var progress: Double = 0
+//    
+//    var body: some View {
+//        ZStack {
+//            Color.black.opacity(0.8)
+//                .ignoresSafeArea()
+//                .onTapGesture {
+//                    showGameContent = false
+//                }
+//            
+//            VStack(spacing: 24) {
+//                // Loading animation
+//                VStack(spacing: 16) {
+//                    ZStack {
+//                        Circle()
+//                            .stroke(.white.opacity(0.3), lineWidth: 8)
+//                            .frame(width: 80, height: 80)
+//                        
+//                        Circle()
+//                            .trim(from: 0, to: progress)
+//                            .stroke(
+//                                LinearGradient(
+//                                    gradient: Gradient(colors: [.green, .blue]),
+//                                    startPoint: .topLeading,
+//                                    endPoint: .bottomTrailing
+//                                ),
+//                                style: StrokeStyle(lineWidth: 8, lineCap: .round)
+//                            )
+//                            .frame(width: 80, height: 80)
+//                            .rotationEffect(.degrees(-90))
+//                    }
+//                    
+//                    Text("Loading Zen Garden...")
+//                        .font(.title3)
+//                        .fontWeight(.semibold)
+//                        .foregroundStyle(.white)
+//                    
+//                    Text("Preparing your peaceful journey")
+//                        .font(.body)
+//                        .foregroundStyle(.white.opacity(0.7))
+//                }
+//                
+//                Button {
+//                    showGameContent = false
+//                } label: {
+//                    Text("Cancel")
+//                        .foregroundStyle(.white.opacity(0.8))
+//                        .padding(.horizontal, 24)
+//                        .padding(.vertical, 12)
+//                        .background {
+//                            Capsule()
+//                                .stroke(.white.opacity(0.3), lineWidth: 1)
+//                        }
+//                }
+//                .buttonStyle(.borderless)
+//                .hoverEffect(.lift)
+//            }
+//            .padding(40)
+//            .background {
+//                RoundedRectangle(cornerRadius: 20)
+//                    .fill(.ultraThinMaterial)
+//            }
+//            .padding(40)
+//        }
+//        .onAppear {
+//            withAnimation(.easeInOut(duration: 2.0)) {
+//                progress = 1.0
+//            }
+//        }
+//    }
+//}
+
+
+//import SwiftUI
+//import RealityKit
+//import RealityKitContent
+//// 1) Import file/playaroundgarden.swift di mana PlayAroundGardenView didefinisikan:
+//import PlayAroundGarden
 
 // MARK: - Zen Game Content Overlay
 struct ZenGameContentOverlay: View {
     @Binding var showGameContent: Bool
     @State private var progress: Double = 0
+    @State private var showPlayAround: Bool = false
     
     var body: some View {
         ZStack {
             Color.black.opacity(0.8)
                 .ignoresSafeArea()
                 .onTapGesture {
+                    // tap di background = cancel
                     showGameContent = false
                 }
             
@@ -858,10 +952,10 @@ struct ZenGameContentOverlay: View {
                         .foregroundStyle(.white.opacity(0.8))
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)
-                        .background {
+                        .background(
                             Capsule()
                                 .stroke(.white.opacity(0.3), lineWidth: 1)
-                        }
+                        )
                 }
                 .buttonStyle(.borderless)
                 .hoverEffect(.lift)
@@ -873,10 +967,21 @@ struct ZenGameContentOverlay: View {
             }
             .padding(40)
         }
+        // 2) Animasi progress + trigger setelah 2 detik:
         .onAppear {
             withAnimation(.easeInOut(duration: 2.0)) {
                 progress = 1.0
             }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                // tutup overlay...
+                showGameContent = false
+                // ...lalu tampilkan PlayAroundGardenView
+                showPlayAround = true
+            }
+        }
+        // 3) Present full-screen PlayAroundGardenView
+        .fullScreenCover(isPresented: $showPlayAround) {
+            PlayAroundZenGarden()
         }
     }
 }
