@@ -1,10 +1,3 @@
-//
-//  MemoriesMainMenu.swift
-//  hack_spatial_rizki_sg
-//
-//  Created by NUS on 7/8/25.
-//
-
 import SwiftUI
 import RealityKit
 import RealityKitContent
@@ -25,7 +18,6 @@ struct MemoryBubblesView: View {
     @State private var floatingOffset: [CGFloat] = []
     @State private var spatialSoundEnabled = true
     @Binding var showMemoriesBuble: Bool
-    
     
     let columns = [
         GridItem(.adaptive(minimum: 150, maximum: 200))
@@ -623,15 +615,6 @@ struct BubbleData: Identifiable {
     var isHighlighted: Bool = false
 }
 
-// Safe array subscript extension
-extension Array {
-    subscript(safe index: Int) -> Element? {
-        guard index >= 0, index < count else { return nil }
-        return self[index]
-    }
-}
-
 #Preview {
     MemoryBubblesView(showMemoriesBuble: .constant(true))
 }
-
