@@ -77,7 +77,7 @@ struct PlaySpaceCatcherMainView: View {
         if let texture = try? TextureResource.load(named: "space_skybox") {
             skyboxMaterial.color = .init(texture: .init(texture))
         } else {
-            skyboxMaterial.color = .init(color: .black) // Fallback color
+//            skyboxMaterial.color = .init(Color.black) // Fallback color
         }
         
         let skyboxEntity = ModelEntity(mesh: skyboxMesh, materials: [skyboxMaterial])
@@ -347,7 +347,7 @@ struct GravitySourceComponent: Component, Codable {}
 #if DEBUG
 struct SpaceCatcherMainView_Previews: PreviewProvider {
     static var previews: some View {
-        SpaceCatcherMainView()
+        PlaySpaceCatcherMainView()
     }
 }
 #endif

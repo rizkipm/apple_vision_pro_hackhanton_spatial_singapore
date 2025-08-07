@@ -9,16 +9,19 @@ import SwiftUI
 
 @main
 struct hack_spatial_rizki_sgApp: App {
+    @State private var appModel = AppModel()
     var body: some Scene {
-//        WindowGroup {
-//            PlayAroundZenGarden()
-//        }
+        
         
         WindowGroup {
-                    MainContent()
-                }
-//                .windowStyle(.volumetric)
-//                .defaultSize(width: 1200, height: 800, depth: 400)
-            }
+            MainContent()
+                .environment(appModel)
+        }
+        ImmersiveSpace(id: appModel.immersiveSpaceID) {
+            ImmersiveView()
+                .environment(appModel)
+        }
+        .immersionStyle(selection: .constant(.mixed), in: .mixed)
+    }
     
 }

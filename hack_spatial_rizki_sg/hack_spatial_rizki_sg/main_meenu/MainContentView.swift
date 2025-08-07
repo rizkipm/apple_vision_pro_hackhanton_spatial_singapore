@@ -8,41 +8,46 @@ import SwiftUI
 
 // MARK: - Game Type Enum
 enum GameType: CaseIterable {
-    case candy, puzzle, memory, reaction
+    case candy, puzzle, memory, ballThrowing
+    
     
     var title: String {
         switch self {
+        case .ballThrowing: return "Catch The Ball"
         case .candy: return "Candy Rush"
         case .puzzle: return "Mind Puzzle"
         case .memory: return "Memory Game"
-        case .reaction: return "Quick Reaction"
+       
         }
     }
     
     var description: String {
         switch self {
+        case .ballThrowing: return "Test your accuracy with ball throwing challenges"
         case .candy: return "Match colorful candies in this sweet adventure"
         case .puzzle: return "Solve challenging puzzles to unlock new levels"
         case .memory: return "Test and improve your memory skills"
-        case .reaction: return "Challenge your reflexes and reaction time"
+       
         }
     }
     
     var icon: String {
         switch self {
+        case .ballThrowing: return "basketball"
         case .candy: return "circle.hexagongrid.fill"
         case .puzzle: return "puzzlepiece.fill"
         case .memory: return "brain.head.profile"
-        case .reaction: return "bolt.fill"
+        
         }
     }
     
     var color: Color {
         switch self {
+        case .ballThrowing: return .orange
         case .candy: return .pink
         case .puzzle: return .blue
         case .memory: return .green
-        case .reaction: return .orange
+        
         }
     }
 }
@@ -59,6 +64,8 @@ struct MainContentView: View {
     @State private var showMemoriesBuble = false
     @State private var showArtistMode = false
     @State private var showAbout = false
+    @State private var showBallThrowingContent = false
+    
     
     
     var body: some View {
@@ -70,7 +77,7 @@ struct MainContentView: View {
                         insertion: .move(edge: .trailing).combined(with: .opacity),
                         removal: .move(edge: .leading).combined(with: .opacity)
                     ))
-                    .zIndex(6)
+                    .zIndex(7)
             } else if showZenGarden {
                 // Full screen Zen Garden page - replaces everything
                 ZenGardenView(showZenGarden: $showZenGarden)
@@ -78,7 +85,7 @@ struct MainContentView: View {
                         insertion: .move(edge: .bottom).combined(with: .opacity),
                         removal: .move(edge: .top).combined(with: .opacity)
                     ))
-                    .zIndex(6)
+                    .zIndex(7)
             }else if showSpaceCatcher {
                 // Full screen Space Catcher page - replaces everything
                 SpaceCatcherView(showSpaceCatcher: $showSpaceCatcher)
@@ -86,7 +93,7 @@ struct MainContentView: View {
                         insertion: .move(edge: .top).combined(with: .opacity),
                         removal: .move(edge: .bottom).combined(with: .opacity)
                     ))
-                    .zIndex(6)
+                    .zIndex(7)
             }else if showMemoriesBuble {
                 // Full screen Space Catcher page - replaces everything
                 MemoryBubblesView(showMemoriesBuble: $showMemoriesBuble)
@@ -94,7 +101,7 @@ struct MainContentView: View {
                         insertion: .move(edge: .top).combined(with: .opacity),
                         removal: .move(edge: .bottom).combined(with: .opacity)
                     ))
-                    .zIndex(6)
+                    .zIndex(7)
             }else if showArtistMode {
                 // Full screen Space Catcher page - replaces everything
                 ArtisticModeView(showArtistMode: $showArtistMode)
@@ -102,7 +109,7 @@ struct MainContentView: View {
                         insertion: .move(edge: .top).combined(with: .opacity),
                         removal: .move(edge: .bottom).combined(with: .opacity)
                     ))
-                    .zIndex(6)
+                    .zIndex(7)
             }else if showAbout {
                 // Full screen Space Catcher page - replaces everything
                 AboutUsView(showAbout: $showAbout)
@@ -110,7 +117,17 @@ struct MainContentView: View {
                         insertion: .move(edge: .top).combined(with: .opacity),
                         removal: .move(edge: .bottom).combined(with: .opacity)
                     ))
-                    .zIndex(6)
+                    .zIndex(7)
+            }else if showBallThrowingContent {
+                // Full screen Space Catcher page - replaces everything
+                
+                BallContentView(showBallThrowingContent: $showBallThrowingContent)
+                                    .transition(.asymmetric(
+                                        insertion: .move(edge: .bottom).combined(with: .opacity),
+                                        removal: .move(edge: .top).combined(with: .opacity)
+                                    ))
+                                    .zIndex(7)
+               
             } else {
                 // Normal content with header and tabs
                 VStack(spacing: 0) {
@@ -122,11 +139,11 @@ struct MainContentView: View {
                         switch selectedTab {
                         case "Home":
                             HomeContentView(showCandyPlanet: $showCandyPlanet, showZenGarden: $showZenGarden, showSpaceCatcher: $showSpaceCatcher, showMemoriesBubble: $showMemoriesBuble,
-                                            showArtistMode: $showArtistMode, showAbout: $showAbout)
+                                            showArtistMode: $showArtistMode, showAbout: $showAbout, )
                         case "Games":
                             GamesContentView(
                                 showFullPageGame: $showFullPageGame,
-                                selectedGameType: $selectedGameType
+                                selectedGameType: $selectedGameType,  showBallThrowing: $showBallThrowingContent
                             )
                         case "About":
                             AboutContentView()
@@ -157,6 +174,7 @@ struct MainContentView: View {
         .animation(.easeInOut(duration: 0.6), value: showMemoriesBuble)
         .animation(.easeInOut(duration: 0.6), value: showArtistMode)
         .animation(.easeInOut(duration: 0.6), value: showAbout)
+        .animation(.easeInOut(duration: 0.6), value: showBallThrowingContent)
 
     }
 }
@@ -316,8 +334,7 @@ struct HomeContentView: View {
                 }
             }
             
-            // Quick actions section
-            QuickActionsView()
+            
             
             Spacer(minLength: 40)
         }
@@ -537,94 +554,58 @@ struct GameCardView: View {
     }
 }
 
-// MARK: - Quick Actions View
-struct QuickActionsView: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Quick Actions")
-                .font(.title3)
-                .fontWeight(.semibold)
-                .foregroundStyle(.white)
-            
-            HStack(spacing: 16) {
-                QuickActionButton(
-                    title: "Daily Challenge",
-                    icon: "calendar.badge.clock",
-                    color: .orange,
-                    action: {}
-                )
-                
-                QuickActionButton(
-                    title: "Leaderboard",
-                    icon: "trophy.fill",
-                    color: .yellow,
-                    action: {}
-                )
-                
-                QuickActionButton(
-                    title: "Achievements",
-                    icon: "star.fill",
-                    color: .purple,
-                    action: {}
-                )
-            }
+// MARK: - Navigation State
+class NavigationState: ObservableObject {
+    @Published var selectedGame: GameType? = nil
+    @Published var showingBallThrowing = false
+    
+    func selectGame(_ gameType: GameType) {
+        selectedGame = gameType
+        if gameType == .ballThrowing {
+            showingBallThrowing = true
         }
     }
 }
 
-// MARK: - Quick Action Button
-struct QuickActionButton: View {
-    let title: String
-    let icon: String
-    let color: Color
-    let action: () -> Void
-    
-    @State private var isHovered = false
-    
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                Image(systemName: icon)
-                    .font(.title3)
-                    .foregroundStyle(color)
-                
-                Text(title)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.white)
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.5))
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
-            .background {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(.ultraThinMaterial.opacity(0.2))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(color.opacity(0.3), lineWidth: 1)
-                    }
-            }
-            .scaleEffect(isHovered ? 1.02 : 1.0)
-        }
-        .buttonStyle(.borderless)
-        .hoverEffect(.lift)
-        .onHover { hovering in
-            withAnimation(.easeInOut(duration: 0.15)) {
-                isHovered = hovering
-            }
-        }
-    }
-}
+
+// MARK: - Enhanced Content Views for Other Tabs
+//struct GamesContentView: View {
+//    @Binding var showFullPageGame: Bool
+//    @Binding var selectedGameType: GameType
+//    @Binding var showBallThrowing: Bool
+//    
+//    var body: some View {
+//        VStack(spacing: 24) {
+//            Text("All Games Collection")
+//                .font(.title2)
+//                .fontWeight(.bold)
+//                .foregroundStyle(.white)
+//                .padding(.top, 20)
+//            
+//            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 4), spacing: 20) {
+//                ForEach(GameType.allCases, id: \.self) { gameType in
+//                    GameTypeCardView(
+//                        gameType: gameType,
+//                        action: {
+//                            selectedGameType = gameType
+//                            showFullPageGame = true
+//                        }
+//                    )
+//                }
+//            }
+//            
+//            Spacer()
+//        }
+//        .padding(.bottom, 40)
+//    }
+//}
 
 // MARK: - Enhanced Content Views for Other Tabs
 struct GamesContentView: View {
     @Binding var showFullPageGame: Bool
     @Binding var selectedGameType: GameType
+    @Binding var showBallThrowing: Bool  // Added Ball Throwing binding
+    
     
     var body: some View {
         VStack(spacing: 24) {
@@ -640,7 +621,23 @@ struct GamesContentView: View {
                         gameType: gameType,
                         action: {
                             selectedGameType = gameType
-                            showFullPageGame = true
+                            
+                            // Check if it's Ball Throwing game
+                            if gameType == .ballThrowing {
+                                withAnimation(.easeInOut(duration: 0.6)) {
+                                                                   showBallThrowing = true  // Ubah ini
+                                                    }
+                                        print("Navigate to Ball Content View")
+//                                withAnimation(.easeInOut(duration: 0.6)) {
+//                                    showPlayBall = true
+//                                    
+//                                    BallContentView(showBallThrowingContent: true)
+//                                    print("Ini page ball")
+////                                    BallContentView(showBallThrowing: true)
+//                                ?}
+                            } else {
+                                showFullPageGame = true
+                            }
                         }
                     )
                 }
@@ -651,6 +648,7 @@ struct GamesContentView: View {
         .padding(.bottom, 40)
     }
 }
+
 
 struct GameTypeCardView: View {
     let gameType: GameType
