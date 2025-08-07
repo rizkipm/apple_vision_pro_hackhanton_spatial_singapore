@@ -4,126 +4,311 @@
 //
 //  Created by rizki aimar on 07/08/25.
 //
-
-import SwiftUI
-
-struct MainContentView: View {
-    let selectedTab: String
-    @Binding var searchText: String
-    
-    var body: some View {
-        VStack(spacing: 0) {
-            // Header
-            HeaderView(searchText: $searchText)
-            
-            // Content based on selected tab
-            ScrollView {
-                switch selectedTab {
-                case "Home":
-                    HomeContentView()
-                case "Games":
-                    GamesContentView()
-                case "About":
-                    AboutContentView()
-                case "Songs":
-                    SongsContentView()
-                case "MadeForYou":
-                    MadeForYouContentView()
-                default:
-                    HomeContentView()
-                }
-            }
-            .padding(.horizontal, 40)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
-
-struct HeaderView: View {
-    @Binding var searchText: String
-    
-    var body: some View {
-        HStack {
-            Text("Home")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
-            
-            Spacer()
-            
-            Button(action: {}) {
-                Image(systemName: "line.3.horizontal")
-                    .font(.title2)
-                    .foregroundColor(.white)
-            }
-        }
-        .padding(.horizontal, 40)
-        .padding(.top, 30)
-        .padding(.bottom, 20)
-        
-        // Search Bar
-        HStack {
-            Image(systemName: "mic.fill")
-                .foregroundColor(.white.opacity(0.6))
-            
-            TextField("Voice Search", text: $searchText)
-                .textFieldStyle(.plain)
-                .font(.system(size: 16))
-                .foregroundColor(.white)
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 25)
-                .fill(.ultraThinMaterial)
-                .opacity(0.3)
-        )
-        .padding(.horizontal, 40)
-        .padding(.bottom, 30)
-    }
-}
 //
-//struct HomeContentView: View {
-//    let games = [
-//        GameItem(title: "Candy Planet", color: .pink, icon: "magnifyingglass"),
-//        GameItem(title: "Zen Garden", color: .green, icon: "leaf.fill"),
-//        GameItem(title: "Space Catcher", color: .blue, icon: "rocket.fill"),
-//        GameItem(title: "Memory Bubbles", color: .orange, icon: "circle.grid.3x3"),
-//        GameItem(title: "Artist Mode", color: .brown, icon: "paintbrush.fill"),
-//        GameItem(title: "About Neuroscope", color: .blue, icon: "brain.head.profile")
-//    ]
+//import SwiftUI
+//
+//struct MainContentView: View {
+//    let selectedTab: String
+//    @Binding var searchText: String
 //    
 //    var body: some View {
-//        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 3), spacing: 20) {
-//            ForEach(games) { game in
-//                GameCardView(game: game)
+//        VStack(spacing: 0) {
+//            // Header
+//            HeaderView(searchText: $searchText)
+//            
+//            // Content based on selected tab
+//            ScrollView {
+//                switch selectedTab {
+//                case "Home":
+//                    HomeContentView()
+//                case "Games":
+//                    GamesContentView()
+//                case "About":
+//                    AboutContentView()
+//                case "Songs":
+//                    SongsContentView()
+//                case "MadeForYou":
+//                    MadeForYouContentView()
+//                default:
+//                    HomeContentView()
+//                }
 //            }
+//            .padding(.horizontal, 40)
 //        }
-//        .padding(.bottom, 40)
+//        .frame(maxWidth: .infinity, maxHeight: .infinity)
 //    }
 //}
 //
+//struct HeaderView: View {
+//    @Binding var searchText: String
+//    
+//    var body: some View {
+//        HStack {
+//            Text("Home")
+//                .font(.largeTitle)
+//                .fontWeight(.bold)
+//                .foregroundColor(.white)
+//            
+//            Spacer()
+//            
+//            Button(action: {}) {
+//                Image(systemName: "line.3.horizontal")
+//                    .font(.title2)
+//                    .foregroundColor(.white)
+//            }
+//        }
+//        .padding(.horizontal, 40)
+//        .padding(.top, 30)
+//        .padding(.bottom, 20)
+//        
+//        // Search Bar
+//        HStack {
+//            Image(systemName: "mic.fill")
+//                .foregroundColor(.white.opacity(0.6))
+//            
+//            TextField("Voice Search", text: $searchText)
+//                .textFieldStyle(.plain)
+//                .font(.system(size: 16))
+//                .foregroundColor(.white)
+//        }
+//        .padding(.horizontal, 20)
+//        .padding(.vertical, 12)
+//        .background(
+//            RoundedRectangle(cornerRadius: 25)
+//                .fill(.ultraThinMaterial)
+//                .opacity(0.3)
+//        )
+//        .padding(.horizontal, 40)
+//        .padding(.bottom, 30)
+//    }
+//}
+//
+//
+//struct HomeContentView: View {
+//    @State private var showCandyPlanet = false
+//    
+//    let games = [
+//        GameItem(title: "Candy Planet", color: .pink, imageName: "candies"),
+//        GameItem(title: "Zen Garden", color: .green, imageName: "garden"),
+//        GameItem(title: "Space Catcher", color: .blue, imageName: "space"),
+//        GameItem(title: "Memory Bubbles", color: .orange, imageName: "memories"),
+//        GameItem(title: "Artist Mode", color: .brown, imageName: "paint"),
+//        GameItem(title: "About Neuroscope", color: .blue, imageName: "about_us")
+//    ]
+//    
+//    var body: some View {
+//        ZStack {
+//            if showCandyPlanet {
+//                // Show Candy Planet page in full screen
+//                CandyPlanetView(showCandyPlanet: $showCandyPlanet)
+//                    .transition(.opacity.combined(with: .scale))
+//                    .zIndex(1)
+//            } else {
+//                // Show normal home content
+//                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 3),
+//                          spacing: 20) {
+//                    ForEach(games) { game in
+//                        GameCardView(
+//                            game: game,
+//                            onTap: {
+//                                handleGameTap(game: game)
+//                            }
+//                        )
+//                    }
+//                }
+//                .padding(.bottom, 40)
+//                .zIndex(0)
+//            }
+//        }
+//        .animation(.easeInOut(duration: 0.5), value: showCandyPlanet)
+//    }
+//    
+//    private func handleGameTap(game: GameItem) {
+//        print("Tapped on \(game.title)")
+//        
+//        // Navigate to specific game based on title
+//        switch game.title {
+//        case "Candy Planet":
+//            withAnimation(.easeInOut(duration: 0.5)) {
+//                showCandyPlanet = true
+//            }
+//        case "Zen Garden":
+//            // TODO: Navigate to Zen Garden
+//            print("Navigate to Zen Garden")
+//        case "Space Catcher":
+//            // TODO: Navigate to Space Catcher
+//            print("Navigate to Space Catcher")
+//        case "Memory Bubbles":
+//            // TODO: Navigate to Memory Bubbles
+//            print("Navigate to Memory Bubbles")
+//        case "Artist Mode":
+//            // TODO: Navigate to Artist Mode
+//            print("Navigate to Artist Mode")
+//        case "About Neuroscope":
+//            // TODO: Navigate to About Neuroscope
+//            print("Navigate to About Neuroscope")
+//        default:
+//            print("Unknown game: \(game.title)")
+//        }
+//    }
+//}
+//
+//// MARK: - Updated Game Item Model
 //struct GameItem: Identifiable {
 //    let id = UUID()
 //    let title: String
 //    let color: Color
-//    let icon: String
+//    let imageName: String   // nama file image di Assets
 //}
 //
+//// MARK: - Updated Game Card View with Action Callback
 //struct GameCardView: View {
+//    let game: GameItem
+//    let onTap: () -> Void
+//    @State private var isHovered = false
+//    
+//    var body: some View {
+//        Button(action: onTap) {
+//            VStack(spacing: 16) {
+//                // Image container
+//                RoundedRectangle(cornerRadius: 20)
+//                    .fill(game.color.gradient)
+//                    .frame(height: 120)
+//                    .overlay(
+//                        ZStack {
+//                            // Fallback icon if image not available
+//                            Image(systemName: gameIcon(for: game.title))
+//                                .font(.system(size: 40))
+//                                .foregroundStyle(.white.opacity(0.8))
+//                            
+//                            // Custom image (uncomment when assets are available)
+//                            // Image(game.imageName)
+//                            //     .resizable()
+//                            //     .scaledToFit()
+//                            //     .frame(width: 100, height: 100)
+//                        }
+//                        .opacity(isHovered ? 1.0 : 0.9)
+//                        .scaleEffect(isHovered ? 1.1 : 1.0)
+//                        .animation(.easeInOut(duration: 0.2), value: isHovered)
+//                    )
+//                    .overlay {
+//                        RoundedRectangle(cornerRadius: 20)
+//                            .stroke(.white.opacity(0.2), lineWidth: 1)
+//                    }
+//                
+//                // Title with special indicator for Candy Planet
+//                HStack {
+//                    Text(game.title)
+//                        .font(.system(size: 16, weight: .semibold))
+//                        .foregroundColor(.white)
+//                        .multilineTextAlignment(.center)
+//                    
+//                    if game.title == "Candy Planet" {
+//                        Image(systemName: "sparkles")
+//                            .font(.caption)
+//                            .foregroundColor(.yellow)
+//                    }
+//                }
+//            }
+//            .padding(16)
+//            .frame(height: 200)
+//            .background(
+//                RoundedRectangle(cornerRadius: 20)
+//                    .fill(.ultraThinMaterial)
+//                    .opacity(0.6)
+//                    .overlay {
+//                        if game.title == "Candy Planet" {
+//                            RoundedRectangle(cornerRadius: 20)
+//                                .stroke(
+//                                    LinearGradient(
+//                                        gradient: Gradient(colors: [.pink, .orange]),
+//                                        startPoint: .topLeading,
+//                                        endPoint: .bottomTrailing
+//                                    ),
+//                                    lineWidth: 2
+//                                )
+//                        }
+//                    }
+//            )
+//            .scaleEffect(isHovered ? 1.05 : 1.0)
+//            .shadow(color: game.color.opacity(0.3), radius: isHovered ? 15 : 8)
+//        }
+//        .buttonStyle(.borderless)
+//        .hoverEffect(.lift)
+//        .onHover { hovering in
+//            withAnimation(.easeInOut(duration: 0.2)) {
+//                isHovered = hovering
+//            }
+//        }
+//    }
+//    
+//    private func gameIcon(for title: String) -> String {
+//        switch title {
+//        case "Candy Planet": return "circle.hexagongrid.fill"
+//        case "Zen Garden": return "leaf.fill"
+//        case "Space Catcher": return "globe"
+//        case "Memory Bubbles": return "brain.head.profile"
+//        case "Artist Mode": return "paintbrush.fill"
+//        case "About Neuroscope": return "info.circle.fill"
+//        default: return "gamecontroller.fill"
+//        }
+//    }
+//}
+//
+//// MARK: - Alternative Implementation with NavigationStack (iOS 16+)
+//struct HomeContentViewWithNavigation: View {
+//    let games = [
+//        GameItem(title: "Candy Planet", color: .pink, imageName: "candies"),
+//        GameItem(title: "Zen Garden", color: .green, imageName: "garden"),
+//        GameItem(title: "Space Catcher", color: .blue, imageName: "space"),
+//        GameItem(title: "Memory Bubbles", color: .orange, imageName: "memories"),
+//        GameItem(title: "Artist Mode", color: .brown, imageName: "paint"),
+//        GameItem(title: "About Neuroscope", color: .blue, imageName: "about_us")
+//    ]
+//    
+//    var body: some View {
+//        NavigationStack {
+//            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 3),
+//                      spacing: 20) {
+//                ForEach(games) { game in
+//                    NavigationLink(value: game) {
+//                        GameCardViewSimple(game: game)
+//                    }
+//                }
+//            }
+//            .padding(.bottom, 40)
+//            .navigationDestination(for: GameItem.self) { game in
+//                destinationView(for: game)
+//            }
+//        }
+//    }
+//    
+//    @ViewBuilder
+//    private func destinationView(for game: GameItem) -> some View {
+//        switch game.title {
+//        case "Candy Planet":
+//            CandyPlanetView(showCandyPlanet: .constant(true))
+//        default:
+//            PlaceholderGameView(gameName: game.title)
+//        }
+//    }
+//}
+//
+//// MARK: - Simple Game Card for Navigation
+//struct GameCardViewSimple: View {
 //    let game: GameItem
 //    @State private var isHovered = false
 //    
 //    var body: some View {
 //        VStack(spacing: 16) {
-//            // Icon container
+//            // Image container
 //            RoundedRectangle(cornerRadius: 20)
 //                .fill(game.color.gradient)
 //                .frame(height: 120)
 //                .overlay(
-//                    Image(systemName: game.icon)
-//                        .font(.system(size: 40, weight: .semibold))
-//                        .foregroundColor(.white)
+//                    Image(systemName: gameIcon(for: game.title))
+//                        .font(.system(size: 40))
+//                        .foregroundStyle(.white.opacity(0.8))
 //                        .scaleEffect(isHovered ? 1.1 : 1.0)
 //                        .animation(.easeInOut(duration: 0.2), value: isHovered)
 //                )
@@ -147,35 +332,439 @@ struct HeaderView: View {
 //            isHovered = hovering
 //        }
 //        .hoverEffect(.lift)
-//        .onTapGesture {
-//            // Handle tap action
-//            print("Tapped on \(game.title)")
+//    }
+//    
+//    private func gameIcon(for title: String) -> String {
+//        switch title {
+//        case "Candy Planet": return "circle.hexagongrid.fill"
+//        case "Zen Garden": return "leaf.fill"
+//        case "Space Catcher": return "globe"
+//        case "Memory Bubbles": return "brain.head.profile"
+//        case "Artist Mode": return "paintbrush.fill"
+//        case "About Neuroscope": return "info.circle.fill"
+//        default: return "gamecontroller.fill"
 //        }
 //    }
 //}
+//
+//// MARK: - Placeholder Game View
+//struct PlaceholderGameView: View {
+//    let gameName: String
+//    
+//    var body: some View {
+//        VStack(spacing: 24) {
+//            Image(systemName: "gamecontroller.fill")
+//                .font(.system(size: 64))
+//                .foregroundStyle(.blue)
+//            
+//            Text(gameName)
+//                .font(.largeTitle)
+//                .fontWeight(.bold)
+//            
+//            Text("Coming Soon!")
+//                .font(.title2)
+//                .foregroundStyle(.secondary)
+//            
+//            Button("Go Back") {
+//                // Navigation back
+//            }
+//            .buttonStyle(.borderedProminent)
+//        }
+//        .padding()
+//        .navigationTitle(gameName)
+//        .navigationBarTitleDisplayMode(.large)
+//    }
+//}
+//
+//// MARK: - Updated Content Views
+//struct GamesContentView: View {
+//    var body: some View {
+//        VStack(spacing: 24) {
+//            Text("All Games Collection")
+//                .font(.title)
+//                .fontWeight(.bold)
+//                .foregroundColor(.white)
+//            
+//            Text("Explore our complete library of brain training games")
+//                .font(.body)
+//                .foregroundColor(.white.opacity(0.8))
+//                .multilineTextAlignment(.center)
+//        }
+//        .padding()
+//    }
+//}
+//
+//struct AboutContentView: View {
+//    var body: some View {
+//        VStack(spacing: 24) {
+//            Text("About Catchiverse")
+//                .font(.title)
+//                .fontWeight(.bold)
+//                .foregroundColor(.white)
+//            
+//            Text("Train your eyes and challenge your brain with our collection of engaging games designed to improve cognitive abilities.")
+//                .font(.body)
+//                .foregroundColor(.white.opacity(0.8))
+//                .multilineTextAlignment(.center)
+//        }
+//        .padding()
+//    }
+//}
+//
+//struct SongsContentView: View {
+//    var body: some View {
+//        VStack(spacing: 24) {
+//            Text("Game Soundtracks")
+//                .font(.title)
+//                .fontWeight(.bold)
+//                .foregroundColor(.white)
+//            
+//            Text("Immersive audio experiences for enhanced gaming.")
+//                .font(.body)
+//                .foregroundColor(.white.opacity(0.8))
+//                .multilineTextAlignment(.center)
+//        }
+//        .padding()
+//    }
+//}
+//
+//struct MadeForYouContentView: View {
+//    var body: some View {
+//        VStack(spacing: 24) {
+//            Text("Personalized Experience")
+//                .font(.title)
+//                .fontWeight(.bold)
+//                .foregroundColor(.white)
+//            
+//            Text("Games and challenges tailored specifically for your skill level and preferences.")
+//                .font(.body)
+//                .foregroundColor(.white.opacity(0.8))
+//                .multilineTextAlignment(.center)
+//        }
+//        .padding()
+//    }
+//}
+//
+//// MARK: - Make GameItem Hashable for NavigationStack
+//extension GameItem: Hashable {
+//    static func == (lhs: GameItem, rhs: GameItem) -> Bool {
+//        lhs.id == rhs.id
+//    }
+//    
+//    func hash(into hasher: inout Hasher) {
+//        hasher.combine(id)
+//    }
+//}
+//
+//#Preview("Home with Navigation") {
+//    HomeContentView()
+//        .background(Color.black)
+//}
+//
+//#Preview("Navigation Stack Version") {
+//    HomeContentViewWithNavigation()
+//        .background(Color.black)
+//}
 
+import SwiftUI
 
-struct HomeContentView: View {
-    let games = [
-        GameItem(title: "Candy Planet", color: .pink, imageName: "candies"),
-        GameItem(title: "Zen Garden", color: .green, imageName: "garden"),
-        GameItem(title: "Space Catcher", color: .blue, imageName: "space"),
-        GameItem(title: "Memory Bubbles", color: .orange, imageName: "memories"),
-        GameItem(title: "Artist Mode", color: .brown, imageName: "paint"),
-        GameItem(title: "About Neuroscope", color: .blue, imageName: "about_us")
-    ]
+// MARK: - Game Type Enum
+enum GameType: CaseIterable {
+    case candy, puzzle, memory, reaction
     
-    var body: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 3),
-                  spacing: 20) {
-            ForEach(games) { game in
-                GameCardView(game: game)
-            }
+    var title: String {
+        switch self {
+        case .candy: return "Candy Rush"
+        case .puzzle: return "Mind Puzzle"
+        case .memory: return "Memory Game"
+        case .reaction: return "Quick Reaction"
         }
-        .padding(.bottom, 40)
+    }
+    
+    var description: String {
+        switch self {
+        case .candy: return "Match colorful candies in this sweet adventure"
+        case .puzzle: return "Solve challenging puzzles to unlock new levels"
+        case .memory: return "Test and improve your memory skills"
+        case .reaction: return "Challenge your reflexes and reaction time"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .candy: return "circle.hexagongrid.fill"
+        case .puzzle: return "puzzlepiece.fill"
+        case .memory: return "brain.head.profile"
+        case .reaction: return "bolt.fill"
+        }
+    }
+    
+    var color: Color {
+        switch self {
+        case .candy: return .pink
+        case .puzzle: return .blue
+        case .memory: return .green
+        case .reaction: return .orange
+        }
     }
 }
 
+// MARK: - Main Content View
+struct MainContentView: View {
+    let selectedTab: String
+    @Binding var searchText: String
+    @Binding var showFullPageGame: Bool
+    @Binding var selectedGameType: GameType
+    @State private var showCandyPlanet = false
+    
+    var body: some View {
+        ZStack {
+            if showCandyPlanet {
+                // Full screen Candy Planet page - replaces everything
+                CandyPlanetView(showCandyPlanet: $showCandyPlanet)
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .trailing).combined(with: .opacity),
+                        removal: .move(edge: .leading).combined(with: .opacity)
+                    ))
+                    .zIndex(2)
+            } else {
+                // Normal content with header and tabs
+                VStack(spacing: 0) {
+                    // Header
+                    HeaderView(selectedTab: selectedTab, searchText: $searchText)
+                    
+                    // Content based on selected tab
+                    ScrollView(.vertical, showsIndicators: false) {
+                        switch selectedTab {
+                        case "Home":
+                            HomeContentView(showCandyPlanet: $showCandyPlanet)
+                        case "Games":
+                            GamesContentView(
+                                showFullPageGame: $showFullPageGame,
+                                selectedGameType: $selectedGameType
+                            )
+                        case "About":
+                            AboutContentView()
+                        case "Songs":
+                            SongsContentView()
+                        case "MadeForYou":
+                            MadeForYouContentView()
+                        default:
+                            HomeContentView(showCandyPlanet: $showCandyPlanet)
+                        }
+                    }
+                    .scrollContentBackground(.hidden)
+                    .padding(.horizontal, 40)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .transition(.asymmetric(
+                    insertion: .move(edge: .leading).combined(with: .opacity),
+                    removal: .move(edge: .trailing).combined(with: .opacity)
+                ))
+                .zIndex(1)
+            }
+        }
+        .animation(.easeInOut(duration: 0.6), value: showCandyPlanet)
+    }
+}
+
+// MARK: - Header View (Updated)
+struct HeaderView: View {
+    let selectedTab: String
+    @Binding var searchText: String
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            // Top header with title and menu
+            HStack {
+                Text(selectedTab)
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.white)
+                
+                Spacer()
+                
+                HStack(spacing: 16) {
+                    // Notifications
+                    Button {
+                        // Notifications action
+                    } label: {
+                        Image(systemName: "bell.fill")
+                            .font(.title3)
+                            .foregroundStyle(.white.opacity(0.8))
+                    }
+                    .buttonStyle(.borderless)
+                    .hoverEffect(.lift)
+                    
+                    // Settings menu
+                    Button {
+                        // Menu action
+                    } label: {
+                        Image(systemName: "line.3.horizontal")
+                            .font(.title2)
+                            .foregroundStyle(.white)
+                    }
+                    .buttonStyle(.borderless)
+                    .hoverEffect(.lift)
+                }
+            }
+            .padding(.horizontal, 40)
+            .padding(.top, 30)
+            
+            // Search Bar
+            HStack(spacing: 12) {
+                Image(systemName: "mic.fill")
+                    .font(.title3)
+                    .foregroundStyle(.white.opacity(0.6))
+                
+                TextField("Voice Search or type to find games...", text: $searchText)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 16))
+                    .foregroundStyle(.white)
+                    .placeholder(when: searchText.isEmpty) {
+                        Text("Voice Search or type to find games...")
+                            .foregroundStyle(.white.opacity(0.5))
+                    }
+                
+                if !searchText.isEmpty {
+                    Button {
+                        searchText = ""
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.white.opacity(0.6))
+                    }
+                    .buttonStyle(.borderless)
+                }
+                
+                Button {
+                    // Search action
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.white.opacity(0.6))
+                }
+                .buttonStyle(.borderless)
+                .hoverEffect(.lift)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
+            .background {
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(.ultraThinMaterial.opacity(0.3))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 25)
+                            .stroke(.white.opacity(0.1), lineWidth: 1)
+                    }
+            }
+            .padding(.horizontal, 40)
+        }
+        .padding(.bottom, 30)
+    }
+}
+
+// MARK: - Home Content View (Updated)
+struct HomeContentView: View {
+    @Binding var showCandyPlanet: Bool
+    
+    let games = [
+            GameItem(title: "Candy Planet", color: .pink, imageName: "candies"),
+            GameItem(title: "Zen Garden", color: .green, imageName: "garden"),
+            GameItem(title: "Space Catcher", color: .blue, imageName: "space"),
+            GameItem(title: "Memory Bubbles", color: .orange, imageName: "memories"),
+            GameItem(title: "Artist Mode", color: .brown, imageName: "paint"),
+            GameItem(title: "About Neuroscope", color: .blue, imageName: "about_us")
+        ]
+//    let games = [
+//        GameItem(title: "Candy Planet", color: .pink, imageName: "candies"),
+//        GameItem(title: "Zen Garden", color: .green, imageName: "garden"),
+//        GameItem(title: "Space Catcher", color: .blue, imageName: "space"),
+//        GameItem(title: "Memory Bubbles", color: .orange, imageName: "memories"),
+//        GameItem(title: "Artist Mode", color: .brown, imageName: "paint"),
+//        GameItem(title: "About Neuroscope", color: .blue, imageName: "about_us")
+//    ]
+    
+    var body: some View {
+        VStack(spacing: 32) {
+            // Welcome section for Home tab
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Welcome back!")
+                            .font(.title2)
+                            .foregroundStyle(.white.opacity(0.8))
+                        
+                        Text("Ready for your next challenge?")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                    }
+                    
+                    Spacer()
+                    
+                    // Quick stats
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text("Level 12")
+                            .font(.headline)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.yellow)
+                        
+                        Text("2,450 XP")
+                            .font(.caption)
+                            .foregroundStyle(.white.opacity(0.7))
+                    }
+                }
+            }
+            .padding(.top, 20)
+            
+            // Games grid
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 3), spacing: 20) {
+                ForEach(games) { game in
+                    GameCardView(
+                        game: game,
+                        onTap: {
+                            handleGameTap(game: game)
+                        }
+                    )
+                }
+            }
+            
+            // Quick actions section
+            QuickActionsView()
+            
+            Spacer(minLength: 40)
+        }
+        .padding(.bottom, 40)
+    }
+    
+    private func handleGameTap(game: GameItem) {
+        print("Tapped on \(game.title)")
+        
+        // Navigate to specific game based on title
+        switch game.title {
+        case "Candy Planet":
+            withAnimation(.easeInOut(duration: 0.6)) {
+                showCandyPlanet = true
+            }
+        case "Zen Garden":
+            // TODO: Navigate to Zen Garden
+            print("Navigate to Zen Garden")
+        case "Space Catcher":
+            // TODO: Navigate to Space Catcher
+            print("Navigate to Space Catcher")
+        case "Memory Bubbles":
+            // TODO: Navigate to Memory Bubbles
+            print("Navigate to Memory Bubbles")
+        case "Artist Mode":
+            // TODO: Navigate to Artist Mode
+            print("Navigate to Artist Mode")
+        case "About Neuroscope":
+            // TODO: Navigate to About Neuroscope
+            print("Navigate to About Neuroscope")
+        default:
+            print("Unknown game: \(game.title)")
+        }
+    }
+}
+
+// MARK: - Game Item Model
 struct GameItem: Identifiable {
     let id = UUID()
     let title: String
@@ -183,88 +772,330 @@ struct GameItem: Identifiable {
     let imageName: String   // nama file image di Assets
 }
 
+// MARK: - Game Card View
 struct GameCardView: View {
     let game: GameItem
+    let onTap: () -> Void
     @State private var isHovered = false
     
     var body: some View {
-        VStack(spacing: 16) {
-            // Image container
-            RoundedRectangle(cornerRadius: 20)
-                .fill(game.color.gradient)
-                .frame(height: 120)
-                .overlay(
-                    Image(game.imageName)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 100, height: 100)
+        Button(action: onTap) {
+            VStack(spacing: 16) {
+                // Image container
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(game.color.gradient)
+                    .frame(height: 120)
+                    .overlay(
+                        ZStack {
+                            // Fallback icon if image not available
+//                            Image(systemName: gameIcon(for: game.title))
+//                                .font(.system(size: 40))
+//                                .foregroundStyle(.white.opacity(0.8))
+                            
+//                             Custom image (uncomment when assets are available)
+                             Image(game.imageName)
+                                 .resizable()
+                                 .scaledToFit()
+                                 .frame(width: 100, height: 100)
+                        }
                         .opacity(isHovered ? 1.0 : 0.9)
                         .scaleEffect(isHovered ? 1.1 : 1.0)
                         .animation(.easeInOut(duration: 0.2), value: isHovered)
-                )
-            
-            // Title
-            Text(game.title)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
+                    )
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(.white.opacity(0.2), lineWidth: 1)
+                    }
+                
+                // Title with special indicator for Candy Planet
+                HStack {
+                    Text(game.title)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                    
+                    if game.title == "Candy Planet" {
+                        Image(systemName: "sparkles")
+                            .font(.caption)
+                            .foregroundColor(.yellow)
+                    }
+                }
+            }
+            .padding(16)
+            .frame(height: 200)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(.ultraThinMaterial)
+                    .opacity(0.6)
+                    .overlay {
+                        if game.title == "Candy Planet" {
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [.pink, .orange]),
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 2
+                                )
+                        }
+                    }
+            )
+            .scaleEffect(isHovered ? 1.05 : 1.0)
+            .shadow(color: game.color.opacity(0.3), radius: isHovered ? 15 : 8)
         }
-        .padding(16)
-        .frame(height: 200)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(.ultraThinMaterial)
-                .opacity(0.6)
-        )
-        .scaleEffect(isHovered ? 1.05 : 1.0)
-        .animation(.easeInOut(duration: 0.2), value: isHovered)
-        .onHover { hovering in
-            isHovered = hovering
-        }
+        .buttonStyle(.borderless)
         .hoverEffect(.lift)
-        .onTapGesture {
-            print("Tapped on \(game.title)")
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isHovered = hovering
+            }
+        }
+    }
+    
+    private func gameIcon(for title: String) -> String {
+        switch title {
+        case "Candy Planet": return "circle.hexagongrid.fill"
+        case "Zen Garden": return "leaf.fill"
+        case "Space Catcher": return "globe"
+        case "Memory Bubbles": return "brain.head.profile"
+        case "Artist Mode": return "paintbrush.fill"
+        case "About Neuroscope": return "info.circle.fill"
+        default: return "gamecontroller.fill"
         }
     }
 }
 
-// Placeholder views for other tabs
-struct GamesContentView: View {
+// MARK: - Quick Actions View
+struct QuickActionsView: View {
     var body: some View {
-        Text("Games Content")
-            .font(.title)
-            .foregroundColor(.white)
-            .padding()
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Quick Actions")
+                .font(.title3)
+                .fontWeight(.semibold)
+                .foregroundStyle(.white)
+            
+            HStack(spacing: 16) {
+                QuickActionButton(
+                    title: "Daily Challenge",
+                    icon: "calendar.badge.clock",
+                    color: .orange,
+                    action: {}
+                )
+                
+                QuickActionButton(
+                    title: "Leaderboard",
+                    icon: "trophy.fill",
+                    color: .yellow,
+                    action: {}
+                )
+                
+                QuickActionButton(
+                    title: "Achievements",
+                    icon: "star.fill",
+                    color: .purple,
+                    action: {}
+                )
+            }
+        }
+    }
+}
+
+// MARK: - Quick Action Button
+struct QuickActionButton: View {
+    let title: String
+    let icon: String
+    let color: Color
+    let action: () -> Void
+    
+    @State private var isHovered = false
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.title3)
+                    .foregroundStyle(color)
+                
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.white)
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.5))
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .background {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.ultraThinMaterial.opacity(0.2))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(color.opacity(0.3), lineWidth: 1)
+                    }
+            }
+            .scaleEffect(isHovered ? 1.02 : 1.0)
+        }
+        .buttonStyle(.borderless)
+        .hoverEffect(.lift)
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered = hovering
+            }
+        }
+    }
+}
+
+// MARK: - Enhanced Content Views for Other Tabs
+struct GamesContentView: View {
+    @Binding var showFullPageGame: Bool
+    @Binding var selectedGameType: GameType
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            Text("All Games Collection")
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundStyle(.white)
+                .padding(.top, 20)
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 4), spacing: 20) {
+                ForEach(GameType.allCases, id: \.self) { gameType in
+                    GameTypeCardView(
+                        gameType: gameType,
+                        action: {
+                            selectedGameType = gameType
+                            showFullPageGame = true
+                        }
+                    )
+                }
+            }
+            
+            Spacer()
+        }
+        .padding(.bottom, 40)
+    }
+}
+
+struct GameTypeCardView: View {
+    let gameType: GameType
+    let action: () -> Void
+    @State private var isHovered = false
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 12) {
+                Image(systemName: gameType.icon)
+                    .font(.system(size: 32))
+                    .foregroundStyle(gameType.color)
+                
+                Text(gameType.title)
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                
+                Text(gameType.description)
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.7))
+                    .multilineTextAlignment(.center)
+                    .lineLimit(3)
+            }
+            .padding(20)
+            .frame(height: 160)
+            .background {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.ultraThinMaterial.opacity(0.3))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(gameType.color.opacity(0.3), lineWidth: 1)
+                    }
+            }
+            .scaleEffect(isHovered ? 1.05 : 1.0)
+        }
+        .buttonStyle(.borderless)
+        .hoverEffect(.lift)
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isHovered = hovering
+            }
+        }
     }
 }
 
 struct AboutContentView: View {
     var body: some View {
-        Text("About Content")
-            .font(.title)
-            .foregroundColor(.white)
-            .padding()
+        VStack(spacing: 24) {
+            Text("About Catchiverse")
+                .font(.title)
+                .fontWeight(.bold)
+                .foregroundStyle(.white)
+                .padding(.top, 20)
+            
+            Text("Train your eyes and challenge your brain with our collection of engaging games designed to improve cognitive abilities.")
+                .font(.body)
+                .foregroundStyle(.white.opacity(0.8))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 40)
+            
+            Spacer()
+        }
     }
 }
 
 struct SongsContentView: View {
     var body: some View {
-        Text("Songs Content")
-            .font(.title)
-            .foregroundColor(.white)
-            .padding()
+        VStack(spacing: 24) {
+            Text("Game Soundtracks")
+                .font(.title)
+                .fontWeight(.bold)
+                .foregroundStyle(.white)
+                .padding(.top, 20)
+            
+            Text("Immersive audio experiences for enhanced gaming.")
+                .font(.body)
+                .foregroundStyle(.white.opacity(0.8))
+                .multilineTextAlignment(.center)
+            
+            Spacer()
+        }
     }
 }
 
 struct MadeForYouContentView: View {
     var body: some View {
-        Text("Made For You Content")
-            .font(.title)
-            .foregroundColor(.white)
-            .padding()
+        VStack(spacing: 24) {
+            Text("Personalized Experience")
+                .font(.title)
+                .fontWeight(.bold)
+                .foregroundStyle(.white)
+                .padding(.top, 20)
+            
+            Text("Games and challenges tailored specifically for your skill level and preferences.")
+                .font(.body)
+                .foregroundStyle(.white.opacity(0.8))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 40)
+            
+            Spacer()
+        }
     }
 }
 
-#Preview {
-    MainContentView(selectedTab: "Home", searchText: .constant(""))
+// MARK: - TextField Placeholder Extension
+extension View {
+    func placeholder<Content: View>(
+        when shouldShow: Bool,
+        alignment: Alignment = .leading,
+        @ViewBuilder placeholder: () -> Content) -> some View {
+        
+        ZStack(alignment: alignment) {
+            placeholder().opacity(shouldShow ? 1 : 0)
+            self
+        }
+    }
 }
+
+
