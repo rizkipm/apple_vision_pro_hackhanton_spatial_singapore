@@ -12,6 +12,7 @@ struct SpaceCatcherView: View {
     @Binding var showSpaceCatcher: Bool
     @State private var animateButton = false
     @State private var showGameContent = false
+    @State private var showPlay = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -75,7 +76,8 @@ struct SpaceCatcherView: View {
                                     // Start Exploring button
                                     Button {
                                         withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                                            showGameContent = true
+//                                            showGameContent = true
+                                            showPlay = true
                                         }
                                     } label: {
                                         HStack(spacing: 8) {
@@ -189,7 +191,8 @@ struct SpaceCatcherView: View {
                                     // Primary action button
                                     Button {
                                         withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                                            showGameContent = true
+//                                            showGameContent = true
+                                            showPlay = true
                                         }
                                     } label: {
                                         HStack {
@@ -266,6 +269,11 @@ struct SpaceCatcherView: View {
         }
         .onAppear {
             animateButton = true
+        }
+        
+        // <-- fullScreenCover di parent:
+        .fullScreenCover(isPresented: $showPlay) {
+            PlaySpaceCatcherMainView()   // view dari playaroundgarden.swift
         }
     }
 }
