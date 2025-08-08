@@ -12,25 +12,41 @@ import SwiftUI
 struct hack_spatial_rizki_sgApp: App {
     @State private var appModel = AppModel()
     var body: some Scene {
-        
-        
         WindowGroup {
-//            PlayCandyContentView()
-//            MainContent()
-            PlayPlanetMainView()
-//                .environment(appModel)
-                
-        }
-        .windowStyle(.volumetric)
-        .defaultSize(width: 2, height: 2, depth: 2, in: .meters)
-        ImmersiveSpace(id: appModel.immersiveSpaceID) {
-            ImmersiveView()
+            MainContent()
                 .environment(appModel)
         }
+//        .windowStyle(.volumetric)
+//        .defaultSize(width: 2, height: 2, depth: 2, in: .meters)
+        
         ImmersiveSpace(id: "CandyWorld") {
-            CandyWorldView()
+                    CandyWorldView()
         }
-        .immersionStyle(selection: .constant(.mixed), in: .mixed)
     }
-    
 }
+//@main
+//struct hack_spatial_rizki_sgApp: App {
+//    @State private var appModel = AppModel()
+//    var body: some Scene {
+//        
+//        
+//        WindowGroup {
+////            PlayCandyContentView()
+////            MainContent()
+//            PlayPlanetMainView()
+//                .environment(appModel)
+//                
+//        }
+//        .windowStyle(.volumetric)
+//        .defaultSize(width: 2, height: 2, depth: 2, in: .meters)
+//        ImmersiveSpace(id: appModel.immersiveSpaceID) {
+//            ImmersiveView()
+//                .environment(appModel)
+//        }
+//        ImmersiveSpace(id: "CandyWorld") {
+//            CandyWorldView()
+//        }
+//        .immersionStyle(selection: .constant(.mixed), in: .mixed)
+//    }
+//    
+//}

@@ -475,21 +475,13 @@ import AVFoundation
 
 
 
+
 import SwiftUI
 import RealityKit
 import AVFoundation
 import AudioToolbox
 
-//@main
-//struct PlanetCatchApp: App {
-//    var body: some Scene {
-//        WindowGroup {
-//            ContentView()
-//        }
-//        .windowStyle(.volumetric)
-//        .defaultSize(width: 2, height: 2, depth: 2, in: .meters)
-//    }
-//}
+
 
 struct PlayPlanetMainView: View {
     @StateObject private var gameState = GameState()
@@ -728,7 +720,10 @@ struct PlayPlanetMainView: View {
     }
     
     func playBackgroundMusic() {
-        guard let url = Bundle.main.url(forResource: "space_ambient", withExtension: "mp3") else { return }
+        guard let url = Bundle.main.url(forResource: "space_ambient", withExtension: "mp3") else {
+            print("Background music file not found - continuing without music")
+            return
+        }
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.numberOfLoops = -1
