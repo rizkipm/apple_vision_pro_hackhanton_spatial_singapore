@@ -616,24 +616,42 @@ struct GamesContentView: View {
                 .padding(.top, 20)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 4), spacing: 20) {
-                ForEach(GameType.allCases, id: \.self) { gameType in
-                    GameTypeCardView(
-                        gameType: gameType,
-                        action: {
-                            selectedGameType = gameType
-                            
-                            // Check if it's Ball Throwing game
-                            if gameType == .ballThrowing {
-                                withAnimation(.easeInOut(duration: 0.6)) {
-                                        showBallThrowing = true  // Ubah ini
+//                ForEach(GameType.allCases, id: \.self) { gameType in
+//                    GameTypeCardView(
+//                        gameType: gameType,
+//                        action: {
+//                            selectedGameType = gameType
+//                            
+//                            // Check if it's Ball Throwing game
+//                            if gameType == .ballThrowing {
+//                                withAnimation(.easeInOut(duration: 0.6)) {
+//                                        showBallThrowing = true  // Ubah ini
+//                                }
+//                                        print("Navigate to Ball Content View")
+//                            } else {
+//                                showFullPageGame = true
+//                            }
+//                        }
+//                    )
+//                }
+                
+                ForEach([GameType.ballThrowing], id: \.self) { gameType in
+                        GameTypeCardView(
+                            gameType: gameType,
+                            action: {
+                                selectedGameType = gameType
+                                
+                                if gameType == .ballThrowing {
+                                    withAnimation(.easeInOut(duration: 0.6)) {
+                                        showBallThrowing = true
+                                    }
+                                    print("Navigate to Ball Content View")
+                                } else {
+                                    showFullPageGame = true
                                 }
-                                        print("Navigate to Ball Content View")
-                            } else {
-                                showFullPageGame = true
                             }
-                        }
-                    )
-                }
+                        )
+                    }
             }
             
             Spacer()
