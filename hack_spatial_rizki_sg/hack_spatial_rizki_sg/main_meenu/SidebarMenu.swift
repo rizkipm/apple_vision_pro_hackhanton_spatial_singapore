@@ -22,7 +22,7 @@ struct SidebarView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Header Section
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 20) {
                 HStack(spacing: 12) {
                     // Logo/Icon
                     Image(systemName: "circle.hexagongrid.fill")
@@ -31,16 +31,16 @@ struct SidebarView: View {
                         .foregroundStyle(.white)
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Catchiverse")
+                        Text("Cvers")
                             .font(.title2)
                             .fontWeight(.bold)
                             .foregroundStyle(.white)
                         
-                        Text("Train Your Eyes, Challenges Your Brain")
-                            .font(.caption)
-                            .foregroundStyle(.white.opacity(0.8))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
+//                        Text("Train Your Eyes, Challenges Your Brain")
+//                            .font(.caption)
+//                            .foregroundStyle(.white.opacity(0.8))
+//                            .lineLimit(1)
+//                            .minimumScaleFactor(0.8)
                     }
                     
                     Spacer()

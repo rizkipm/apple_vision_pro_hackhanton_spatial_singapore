@@ -273,7 +273,7 @@ struct SpaceCatcherView: View {
         
         // <-- fullScreenCover di parent:
         .fullScreenCover(isPresented: $showPlay) {
-            PlaySpaceCatcherMainView()   // view dari playaroundgarden.swift
+//            PlaySpaceCatcherMainView()   // view dari playaroundgarden.swift
         }
     }
 }

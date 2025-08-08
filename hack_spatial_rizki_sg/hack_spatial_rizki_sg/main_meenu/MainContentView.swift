@@ -625,16 +625,9 @@ struct GamesContentView: View {
                             // Check if it's Ball Throwing game
                             if gameType == .ballThrowing {
                                 withAnimation(.easeInOut(duration: 0.6)) {
-                                                                   showBallThrowing = true  // Ubah ini
-                                                    }
+                                        showBallThrowing = true  // Ubah ini
+                                }
                                         print("Navigate to Ball Content View")
-//                                withAnimation(.easeInOut(duration: 0.6)) {
-//                                    showPlayBall = true
-//                                    
-//                                    BallContentView(showBallThrowingContent: true)
-//                                    print("Ini page ball")
-////                                    BallContentView(showBallThrowing: true)
-//                                ?}
                             } else {
                                 showFullPageGame = true
                             }
@@ -697,6 +690,8 @@ struct GameTypeCardView: View {
 struct AboutContentView: View {
     var body: some View {
         VStack(spacing: 24) {
+            
+           
             Text("About Catchiverse")
                 .font(.title)
                 .fontWeight(.bold)

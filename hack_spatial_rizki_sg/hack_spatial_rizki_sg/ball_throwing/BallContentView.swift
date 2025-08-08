@@ -11,7 +11,7 @@ struct BallContentView: View {
         NavigationStack {
             VStack(spacing: 30) {
                 Button(action: {
-                    showPlayBall = false
+                    showBallThrowingContent = false
                 }) {
                     HStack(spacing: 8) {
                         Image(systemName: "chevron.left.circle.fill")

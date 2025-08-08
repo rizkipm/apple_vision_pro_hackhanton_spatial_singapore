@@ -13,7 +13,7 @@ struct ImmersiveView: View {
     @State private var rootEntity = Entity()
     @State private var activeBalls: [BallData] = []
     @State private var ballTimers: [UUID: Timer] = [:]
-    @State private var targetDistance: Int = [6, 7, 8, 9, 10].randomElement() ?? 8
+    @State private var targetDistance: Int = [3, 4, 5, 6, 7].randomElement() ?? 8
     @State private var showPrompt: Bool = true
     @State private var showScore: Bool = false
     @State private var lastResultDistance: Float = 0.0
@@ -21,10 +21,10 @@ struct ImmersiveView: View {
 
     var body: some View {
         ZStack {
-            RealityView { content in
+            RealityView { content, attachments in
                 content.add(rootEntity)
-                
-                // Setup lighting
+
+                // --- Lighting ---
                 let ambientLight = Entity()
                 ambientLight.components[DirectionalLightComponent.self] = DirectionalLightComponent(
                     color: .white,
@@ -32,59 +32,52 @@ struct ImmersiveView: View {
                 )
                 ambientLight.look(at: [0, 3, 3], from: [0, 5, 5], relativeTo: nil)
                 rootEntity.addChild(ambientLight)
-                
-                // Create distance markers
+
+                // --- Distance markers (LEFT↔RIGHT lines, original correct orientation) ---
                 let lineLength: Float = 6.0
                 let lineY: Float = 0.20
                 for distance in 1...15 {
-                    let markerEntity = Entity()
-                    
-                    let lineColor: UIColor
-                    if distance <= 5 {
-                        lineColor = .systemGreen
-                    } else if distance <= 10 {
-                        lineColor = .systemOrange
-                    } else {
-                        lineColor = .systemRed
-                    }
-                    
-                    let lineEntity = ModelEntity(
+                    let marker = Entity()
+
+                    let lineColor: UIColor =
+                        distance <= 5 ? .systemGreen :
+                        distance <= 10 ? .systemOrange : .systemRed
+
+                    let line = ModelEntity(
                         mesh: .generateCylinder(height: lineLength, radius: 0.008),
-                        materials: [SimpleMaterial(
-                            color: lineColor,
-                            roughness: 0.3,
-                            isMetallic: false
-                        )]
+                        materials: [SimpleMaterial(color: lineColor, roughness: 0.3, isMetallic: false)]
                     )
-                    lineEntity.orientation = simd_quatf(angle: .pi/2, axis: SIMD3<Float>(0,0,1))
-                    lineEntity.position = SIMD3<Float>(0, lineY, -Float(distance))
-                    markerEntity.addChild(lineEntity)
-                    
+                    // Rotate around Z so cylinder runs along X (left↔right)
+                    line.orientation = simd_quatf(angle: .pi/2, axis: SIMD3<Float>(0, 0, 1))
+                    line.position = SIMD3<Float>(0, lineY, -Float(distance))
+                    marker.addChild(line)
+
                     let textMesh = MeshResource.generateText(
                         "\(distance)m",
                         extrusionDepth: 0.008,
                         font: .systemFont(ofSize: 0.13, weight: .bold)
                     )
-                    let textEntity = ModelEntity(
+                    let text = ModelEntity(
                         mesh: textMesh,
                         materials: [SimpleMaterial(color: .white, isMetallic: false)]
                     )
-                    textEntity.position = SIMD3<Float>(0, lineY + 0.08, -Float(distance))
-                    markerEntity.addChild(textEntity)
-                    
-                    rootEntity.addChild(markerEntity)
+                    // Centered above the line
+                    text.position = SIMD3<Float>(0, lineY + 0.08, -Float(distance))
+                    marker.addChild(text)
+
+                    rootEntity.addChild(marker)
                 }
-                
-                // Danger zone
-                let dangerMarker = Entity()
+
+                // --- Danger line at 0.5m (same orientation) ---
+                let danger = Entity()
                 let dangerLine = ModelEntity(
                     mesh: .generateCylinder(height: lineLength, radius: 0.010),
                     materials: [SimpleMaterial(color: .systemRed, roughness: 0.3, isMetallic: false)]
                 )
-                dangerLine.orientation = simd_quatf(angle: .pi/2, axis: SIMD3<Float>(0,0,1))
+                dangerLine.orientation = simd_quatf(angle: .pi/2, axis: SIMD3<Float>(0, 0, 1))
                 dangerLine.position = SIMD3<Float>(0, lineY, -0.5)
-                dangerMarker.addChild(dangerLine)
-                
+                danger.addChild(dangerLine)
+
                 let dangerTextMesh = MeshResource.generateText(
                     "DANGER! 0.5m",
                     extrusionDepth: 0.01,
@@ -95,123 +88,115 @@ struct ImmersiveView: View {
                     materials: [SimpleMaterial(color: .systemRed, isMetallic: false)]
                 )
                 dangerText.position = SIMD3<Float>(0, lineY + 0.08, -0.5)
-                dangerMarker.addChild(dangerText)
-                rootEntity.addChild(dangerMarker)
-                
-                // Create 3D challenge text positioned at 8m back, 3m high
-                let challengeEntity = Entity()
-                challengeEntity.name = "challengeText"
-                
-                let instructionMesh = MeshResource.generateText(
-                    "🎯 Try to stop the ball as close as possible to",
-                    extrusionDepth: 0.01,
-                    font: .systemFont(ofSize: 0.15, weight: .bold)
-                )
-                
-                let instructionTextEntity = ModelEntity(
-                    mesh: instructionMesh,
-                    materials: [SimpleMaterial(color: .white, isMetallic: false)]
-                )
-                
-                instructionTextEntity.position = SIMD3<Float>(0, 3.0, -8.0)
-                challengeEntity.addChild(instructionTextEntity)
-                
-                let targetMesh = MeshResource.generateText(
-                    "\(targetDistance)m",
-                    extrusionDepth: 0.015,
-                    font: .systemFont(ofSize: 0.3, weight: .heavy)
-                )
-                
-                let targetTextEntity = ModelEntity(
-                    mesh: targetMesh,
-                    materials: [SimpleMaterial(color: .systemCyan, isMetallic: false)]
-                )
-                
-                targetTextEntity.name = "targetNumber"
-                targetTextEntity.position = SIMD3<Float>(0, 2.5, -8.0)
-                challengeEntity.addChild(targetTextEntity)
-                
-                rootEntity.addChild(challengeEntity)
-                
-                // Start the ball throwing
-                let interval = Double.random(in: 5.0...8.0)
-                throwTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
-                    self.throwBall()
-                    self.scheduleNextThrow()
+                danger.addChild(dangerText)
+                rootEntity.addChild(danger)
+
+                // --- Attachments (prompt & score) ---
+                if let challengeAttachment = attachments.entity(for: "challengeText") {
+                    challengeAttachment.position = SIMD3<Float>(0, 2.0, -2.0)
+                    challengeAttachment.name = "challengeAttachment"
+                    rootEntity.addChild(challengeAttachment)
                 }
-                
-            } update: { content in
+                if let scoreAttachment = attachments.entity(for: "scoreText") {
+                    scoreAttachment.position = SIMD3<Float>(0, 1.5, -6.0)
+                    scoreAttachment.name = "scoreAttachment"
+                    rootEntity.addChild(scoreAttachment)
+                }
+
+                // --- Start throwing ---
+                scheduleNextThrow()
+
+            } update: { _, attachments in
+                // Keep attachments put (optional)
+                if let challenge = attachments.entity(for: "challengeText") {
+                    challenge.position = SIMD3<Float>(0, 2.0, -2.0)
+                }
+                if let score = attachments.entity(for: "scoreText") {
+                    score.position = SIMD3<Float>(0, 1.5, -6.0)
+                }
+
+                // 🔹 Consume freeze request from AppModel (button OR pinch/tap)
                 if let idToFreeze = appModel.freezeRequestBallID {
-                    let resultDistance = freezeBall(withID: idToFreeze)
-                    appModel.freezeBall(id: idToFreeze)
-                    if let resultDistance = resultDistance {
+                    if let resultDistance = freezeBall(withID: idToFreeze) {
+                        appModel.freezeBall(id: idToFreeze)
                         scoreUser(distance: resultDistance)
+                    } else {
+                        // No-op but clear the request so we don't loop forever
+                        appModel.freezeBall(id: idToFreeze)
+                    }
+                }
+            } attachments: {
+                // Prompt overlay
+                Attachment(id: "challengeText") {
+                    if showPrompt {
+                        VStack(spacing: 16) {
+                            Text("🎯 Try to stop the ball as close as possible to")
+                                .font(.title2).fontWeight(.semibold).foregroundColor(.white)
+                            Text("\(targetDistance)m")
+                                .font(.system(size: 72, weight: .heavy, design: .rounded))
+                                .foregroundColor(.cyan)
+                                .shadow(color: .cyan.opacity(0.8), radius: 12)
+                            Text("✋ Pinch (Vision Pro) or tap/click (Simulator) to freeze")
+                                .font(.headline).foregroundColor(.white.opacity(0.9))
+                        }
+                        .padding(.horizontal, 40).padding(.vertical, 32)
+                        .background {
+                            RoundedRectangle(cornerRadius: 24)
+                                .fill(.black.opacity(0.85))
+                                .stroke(.cyan.opacity(0.6), lineWidth: 2)
+                                .shadow(color: .cyan.opacity(0.3), radius: 16)
+                        }
+                    }
+                }
+                // Score overlay
+                Attachment(id: "scoreText") {
+                    if showScore {
+                        let tint: Color = (lastScore == 100 ? .green : (lastScore >= 75 ? .orange : .red))
+                        VStack(spacing: 16) {
+                            Text("🎯 You stopped the ball at")
+                                .font(.title2).fontWeight(.semibold).foregroundColor(.white)
+                            Text(String(format: "%.2f m", lastResultDistance))
+                                .font(.system(size: 72, weight: .heavy, design: .rounded))
+                                .foregroundColor(.green)
+                                .shadow(color: .green.opacity(0.8), radius: 12)
+                            Text("Score: \(lastScore)")
+                                .font(.headline).fontWeight(.bold).foregroundColor(tint)
+                        }
+                        .padding(.horizontal, 40).padding(.vertical, 32)
+                        .background {
+                            RoundedRectangle(cornerRadius: 24)
+                                .fill(.black.opacity(0.85))
+                                .stroke(tint.opacity(0.6), lineWidth: 2)
+                                .shadow(color: tint.opacity(0.3), radius: 16)
+                        }
                     }
                 }
             }
-            .gesture(
-                SpatialTapGesture()
-                    .onEnded { _ in
-                        print("👁️ Vision Pro spatial tap detected - freezing oldest ball!")
-                        if let first = oldestUnfrozenBall() {
-                            let resultDistance = freezeBall(withID: first.id)
-                            appModel.freezeBall(id: first.id)
-                            if let resultDistance = resultDistance {
-                                scoreUser(distance: resultDistance)
-                            }
-                        }
-                    }
+            // ✅ Add pinch/tap gestures -> request freeze in AppModel
+            .simultaneousGesture(
+                SpatialTapGesture().onEnded { _ in
+                    print("👆 SpatialTap (pinch) detected")
+                    appModel.requestFreezeOldestBall()
+                }
             )
-            .gesture(
-                TapGesture()
-                    .onEnded { _ in
-                        print("📱 Regular tap detected - freezing oldest ball!")
-                        if let first = oldestUnfrozenBall() {
-                            let resultDistance = freezeBall(withID: first.id)
-                            appModel.freezeBall(id: first.id)
-                            if let resultDistance = resultDistance {
-                                scoreUser(distance: resultDistance)
-                            }
-                        }
-                    }
+            .simultaneousGesture(
+                TapGesture().onEnded {
+                    print("👆 Tap detected")
+                    appModel.requestFreezeOldestBall()
+                }
             )
-            .onAppear {
-                appModel.immersiveSpaceState = .open
-            }
+            .onAppear { appModel.immersiveSpaceState = .open }
             .onDisappear {
                 stopThrowingBalls()
                 appModel.immersiveSpaceState = .closed
             }
-            
-            // --- Score display only ---
-            VStack {
-                Spacer()
-                if showScore {
-                    VStack(spacing: 8) {
-                        Text("You stopped the ball at")
-                            .font(.headline)
-                        Text(String(format: "%.2f m", lastResultDistance))
-                            .font(.system(size: 38, weight: .heavy, design: .rounded))
-                            .foregroundColor(.green)
-                        Text("Score: \(lastScore)")
-                            .font(.title2)
-                            .foregroundColor(lastScore == 100 ? .green : (lastScore >= 75 ? .orange : .red))
-                    }
-                    .padding()
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(16)
-                    .padding(.bottom, 50)
-                }
-            }
-            .animation(.spring, value: showScore)
-            .padding()
+
+            // Subtle background dimming (optional)
+            Rectangle().fill(.black.opacity(0.15)).ignoresSafeArea().allowsHitTesting(false)
         }
     }
 
-    func oldestUnfrozenBall() -> BallData? {
-        activeBalls.first { !$0.isFrozen }
-    }
-
+    // MARK: - Throwing
     func scheduleNextThrow() {
         let interval = Double.random(in: 5.0...8.0)
         throwTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
@@ -223,75 +208,56 @@ struct ImmersiveView: View {
     func stopThrowingBalls() {
         throwTimer?.invalidate()
         throwTimer = nil
-        for timer in ballTimers.values {
-            timer.invalidate()
-        }
+        for t in ballTimers.values { t.invalidate() }
         ballTimers.removeAll()
-        for ball in activeBalls {
-            ball.entity.removeFromParent()
-        }
+        for b in activeBalls { b.entity.removeFromParent() }
         activeBalls.removeAll()
     }
 
     func throwBall() {
         let id = UUID()
-        let ballEntity = ModelEntity(
+        let ball = ModelEntity(
             mesh: .generateSphere(radius: 0.15),
-            materials: [SimpleMaterial(
-                color: UIColor.white,
-                roughness: 0.9,
-                isMetallic: false
-            )]
+            materials: [SimpleMaterial(color: UIColor.white, roughness: 0.9, isMetallic: false)]
         )
-        ballEntity.name = "ball_\(id.uuidString)"
+        // Spawn somewhere in front
         let angle = Float.random(in: -Float.pi/6...Float.pi/6)
-        let distance: Float = 15.0
-        let startX = sin(angle) * distance
+        let dist: Float = 15.0
+        let startX = sin(angle) * dist
         let startY = Float.random(in: 1.2...2.2)
-        let startZ = -cos(angle) * distance
-        ballEntity.position = SIMD3<Float>(startX, startY, startZ)
-        rootEntity.addChild(ballEntity)
+        let startZ = -cos(angle) * dist
+        ball.position = SIMD3<Float>(startX, startY, startZ)
+        rootEntity.addChild(ball)
 
         appModel.activeBallIDs.append(id)
-        activeBalls.append(BallData(entity: ballEntity, id: id, isFrozen: false))
-        
-        // Start ball movement
+        activeBalls.append(BallData(entity: ball, id: id, isFrozen: false))
+
+        // Move toward the user
         let totalTime: Float = 10.0
         let startTime = CFAbsoluteTimeGetCurrent()
         let startPos = SIMD3<Float>(startX, startY, startZ)
         let endPos = SIMD3<Float>(0, 1.65, 0.2)
-        
-        let timer = Timer.scheduledTimer(withTimeInterval: 0.016, repeats: true) { timer in
+
+        let t = Timer.scheduledTimer(withTimeInterval: 0.016, repeats: true) { timer in
             DispatchQueue.main.async {
                 guard let idx = activeBalls.firstIndex(where: { $0.id == id }) else {
-                    timer.invalidate()
-                    ballTimers[id] = nil
-                    return
+                    timer.invalidate(); ballTimers[id] = nil; return
                 }
                 if activeBalls[idx].isFrozen {
-                    timer.invalidate()
-                    ballTimers[id] = nil
-                    return
+                    timer.invalidate(); ballTimers[id] = nil; return
                 }
-                let currentTime = CFAbsoluteTimeGetCurrent()
-                let elapsedTime = Float(currentTime - startTime)
-                let progress = min(elapsedTime / totalTime, 1.0)
-                let currentPosition = SIMD3<Float>(
-                    startPos.x + (endPos.x - startPos.x) * progress,
-                    startPos.y + (endPos.y - startPos.y) * progress,
-                    startPos.z + (endPos.z - startPos.z) * progress
-                )
-                ballEntity.position = currentPosition
+                let elapsed = Float(CFAbsoluteTimeGetCurrent() - startTime)
+                let progress = min(elapsed / totalTime, 1.0)
+                let pos = startPos + (endPos - startPos) * progress
+                ball.position = pos
 
-                if currentPosition.z > 0.1 {
-                    ballEntity.removeFromParent()
+                // Despawn after passing the user
+                if pos.z > 0.1 {
+                    ball.removeFromParent()
                     timer.invalidate()
                     ballTimers[id] = nil
                     activeBalls.removeAll { $0.id == id }
-                    if let modelIdx = appModel.activeBallIDs.firstIndex(of: id) {
-                        appModel.activeBallIDs.remove(at: modelIdx)
-                    }
-                    return
+                    appModel.activeBallIDs.removeAll { $0 == id }
                 }
 
                 if progress >= 1.0 {
@@ -300,44 +266,39 @@ struct ImmersiveView: View {
                 }
             }
         }
-        ballTimers[id] = timer
+        ballTimers[id] = t
     }
 
+    // MARK: - Freeze & score
     func freezeBall(withID id: UUID) -> Float? {
         guard let idx = activeBalls.firstIndex(where: { $0.id == id }),
               !activeBalls[idx].isFrozen else { return nil }
+
         var ballData = activeBalls[idx]
         ballData.isFrozen = true
-        if let timer = ballTimers[id] {
-            timer.invalidate()
-            ballTimers[id] = nil
-        }
+
+        // Stop movement
+        if let timer = ballTimers[id] { timer.invalidate(); ballTimers[id] = nil }
+
+        // Turn blue
         if var model = ballData.entity.components[ModelComponent.self] {
-            model.materials = [SimpleMaterial(
-                color: .systemBlue,
-                roughness: 0.9,
-                isMetallic: false
-            )]
+            model.materials = [SimpleMaterial(color: .systemBlue, roughness: 0.9, isMetallic: false)]
             ballData.entity.components[ModelComponent.self] = model
         }
-        let zDistance = abs(ballData.entity.position.z)
-        
-        // Add distance label directly here
-        let distanceText = String(format: "%.2fm", zDistance)
-        let textMesh = MeshResource.generateText(
-            distanceText,
+
+        // Add distance label
+        let z = abs(ballData.entity.position.z)
+        let labelMesh = MeshResource.generateText(
+            String(format: "%.2fm", z),
             extrusionDepth: 0.008,
-            font: .systemFont(ofSize: 0.17, weight: .bold)
+            font: .systemFont(ofSize: 0.12, weight: .bold)
         )
-        let textEntity = ModelEntity(
-            mesh: textMesh,
-            materials: [SimpleMaterial(color: .white, isMetallic: false)]
-        )
-        textEntity.position = SIMD3<Float>(0, 0.25, 0)
-        ballData.entity.addChild(textEntity)
-        
+        let label = ModelEntity(mesh: labelMesh, materials: [SimpleMaterial(color: .yellow, isMetallic: false)])
+        label.position = SIMD3<Float>(0, 0.2, 0)
+        ballData.entity.addChild(label)
+
         activeBalls[idx] = ballData
-        return zDistance
+        return z
     }
 
     func scoreUser(distance: Float) {
@@ -349,32 +310,10 @@ struct ImmersiveView: View {
         lastScore = score
         showPrompt = false
         showScore = true
-        
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
             self.targetDistance = [6, 7, 8, 9, 10].randomElement() ?? 8
             self.showPrompt = true
             self.showScore = false
-            
-            // Update 3D target text inline
-            if let challengeEntity = self.rootEntity.children.first(where: { $0.name == "challengeText" }),
-               let oldTarget = challengeEntity.children.first(where: { $0.name == "targetNumber" }) {
-                oldTarget.removeFromParent()
-                
-                let newTargetMesh = MeshResource.generateText(
-                    "\(self.targetDistance)m",
-                    extrusionDepth: 0.015,
-                    font: .systemFont(ofSize: 0.3, weight: .heavy)
-                )
-                
-                let newTargetText = ModelEntity(
-                    mesh: newTargetMesh,
-                    materials: [SimpleMaterial(color: .systemCyan, isMetallic: false)]
-                )
-                
-                newTargetText.name = "targetNumber"
-                newTargetText.position = SIMD3<Float>(0, 2.5, -8.0)
-                challengeEntity.addChild(newTargetText)
-            }
         }
     }
 }
